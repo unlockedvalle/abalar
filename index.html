@@ -1,365 +1,703 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Abalar Exploits</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg: #ffffff;
-            --surface: #f9fafb;
-            --primary: #000000;
-            --accent: #6366f1;
-            --text: #111827;
-            --text-light: #6b7280;
-            --border: #e5e7eb;
-            --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-            --logo-grad: linear-gradient(to right, #000, #4f46e5);
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ABALAR EXPLOITS — Guía Técnica</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --bg2: #0f1526;
+    --surface: #1a2340;
+    --surface2: #1f2a4a;
+    --border: #2a3a5c;
+    --accent: #3b82f6;
+    --accent2: #60a5fa;
+    --green: #22c55e;
+    --text: #e2e8f0;
+    --text2: #94a3b8;
+    --text3: #64748b;
+    --code-bg: #0d1117;
+    --code-border: #1e2d45;
+    --radius: 10px;
+    --radius-lg: 16px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; font-size: 15px; line-height: 1.7; min-height: 100vh; }
 
-        [data-theme="dark"] {
-            --bg: #0b0f1a;
-            --surface: #161b2a;
-            --primary: #ffffff;
-            --accent: #818cf8;
-            --text: #f9fafb;
-            --text-light: #9ca3af;
-            --border: #2d334a;
-            --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
-            --logo-grad: linear-gradient(to right, #fff, #818cf8);
-        }
+  /* ── SCROLLBAR GLOBAL ── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: #2a3a5c; border-radius: 10px; }
+  ::-webkit-scrollbar-thumb:hover { background: #3b4f72; }
+  ::-webkit-scrollbar-corner { background: var(--bg); }
+  * { scrollbar-width: thin; scrollbar-color: #2a3a5c var(--bg); }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
+  /* SIDEBAR */
+  #sidebar {
+    position: fixed; top: 0; left: 0;
+    width: 260px; height: 100vh;
+    background: var(--bg2);
+    border-right: 1px solid var(--border);
+    display: flex; flex-direction: column;
+    z-index: 100; overflow-y: auto;
+    transition: transform 0.3s ease;
+  }
+  #sidebar::-webkit-scrollbar { width: 4px; }
+  #sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            transition: background 0.3s, color 0.3s;
-            overflow-x: hidden;
-            min-height: 100vh;
-        }
+  .sidebar-logo { padding: 28px 24px 20px; border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.15s; }
+  .sidebar-logo:hover { background: var(--surface); }
+  .logo-main { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; letter-spacing: -0.5px; color: #fff; line-height: 1; }
+  .logo-main span { color: var(--accent); }
+  .logo-sub { font-size: 11px; font-family: 'JetBrains Mono', monospace; color: var(--text3); letter-spacing: 2px; margin-top: 6px; text-transform: uppercase; }
 
-        /* --- NAVBAR --- */
-        nav {
-            padding: 1.5rem 10%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--border);
-        }
+  .sidebar-home-btn {
+    display: flex; align-items: center; gap: 10px;
+    padding: 13px 24px; font-size: 13px; font-weight: 500;
+    color: var(--text2); cursor: pointer;
+    border-bottom: 1px solid var(--border);
+    border-left: 2px solid transparent;
+    transition: all 0.15s;
+  }
+  .sidebar-home-btn:hover { color: var(--text); background: var(--surface); }
+  .sidebar-home-btn.active { color: #fff; border-left-color: var(--accent2); background: rgba(59,130,246,0.08); }
+  .sidebar-home-btn svg { width: 14px; height: 14px; opacity: 0.6; }
 
-        .logo { 
-            font-weight: 800; 
-            font-size: 1.2rem; 
-            letter-spacing: -0.5px;
-            background: var(--logo-grad);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+  .sidebar-section-title {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700;
+    letter-spacing: 2px; text-transform: uppercase; color: var(--text3); padding: 20px 24px 8px;
+  }
+  .sidebar-section-title.linux { color: #22c55e; }
+  .sidebar-section-title.abalar { color: #3b82f6; }
 
-        .nav-right { display: flex; align-items: center; gap: 20px; }
+  .sidebar-link {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 24px; font-size: 13px; color: var(--text2);
+    text-decoration: none; border-left: 2px solid transparent;
+    transition: all 0.15s; cursor: pointer;
+  }
+  .sidebar-link:hover { color: var(--text); background: var(--surface); }
+  .sidebar-link.hl-linux { color: var(--green); border-left-color: var(--green); background: rgba(34,197,94,0.08); }
+  .sidebar-link.hl-abalar { color: var(--accent2); border-left-color: var(--accent); background: rgba(59,130,246,0.08); }
+  .sidebar-link svg { width: 13px; height: 13px; opacity: 0.45; flex-shrink: 0; }
 
-        .theme-toggle {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            padding: 8px;
-            border-radius: 12px;
-            cursor: pointer;
-            color: var(--text);
-            display: flex;
-            transition: 0.2s;
-        }
+  /* MAIN */
+  #main { margin-left: 260px; min-height: 100vh; }
 
-        /* --- HOME SECTION --- */
-        .hero {
-            padding: 80px 10%;
-            text-align: center;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+  #topbar {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(10,14,26,0.92); backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 40px; height: 56px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .topbar-bc { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text3); }
+  .topbar-bc span { color: var(--accent2); }
+  #hamburger { display: none; background: none; border: none; color: var(--text); cursor: pointer; padding: 8px; }
 
-        .hero h1 {
-            font-size: 4rem;
-            font-weight: 800;
-            letter-spacing: -2px;
-            margin-bottom: 1.5rem;
-            background: var(--logo-grad);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+  #content { padding: 48px 56px; max-width: 920px; }
 
-        .hero p {
-            font-size: 1.2rem;
-            color: var(--text-light);
-            max-width: 600px;
-            margin: 0 auto 3rem;
-        }
+  /* PAGES */
+  .page { display: none; animation: fadeIn 0.2s ease; }
+  .page.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; } }
 
-        /* --- GRID --- */
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.5rem;
-            margin-top: 2rem;
-        }
+  /* ── HOME ── */
+  .home-hero { padding: 48px 0 52px; border-bottom: 1px solid var(--border); margin-bottom: 52px; }
+  .home-eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); margin-bottom: 20px; }
+  .home-hero h1 { font-family: 'Syne', sans-serif; font-size: 58px; font-weight: 800; letter-spacing: -2px; line-height: 1; color: #fff; margin-bottom: 6px; }
+  .home-hero h1 .dim { color: var(--text3); }
+  .home-hero .subtitle { font-size: 16px; color: var(--text2); font-weight: 300; margin-top: 20px; max-width: 540px; line-height: 1.65; }
 
-        .card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            padding: 2.5rem 1.5rem;
-            border-radius: 24px;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            text-align: center;
-        }
+  .home-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 40px; }
+  .home-card {
+    background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-lg);
+    padding: 28px 28px 22px; cursor: pointer; transition: all 0.2s; position: relative; overflow: hidden;
+  }
+  .home-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; }
+  .home-card.linux::before { background: linear-gradient(90deg, var(--green), transparent); }
+  .home-card.abalar::before { background: linear-gradient(90deg, var(--accent), transparent); }
+  .home-card:hover { border-color: var(--surface2); transform: translateY(-2px); background: var(--surface); }
 
-        .card:hover {
-            border-color: var(--accent);
-            transform: translateY(-8px);
-            box-shadow: var(--shadow);
-        }
+  .home-card-icon { width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 18px; }
+  .home-card.linux .home-card-icon { background: rgba(34,197,94,0.12); color: var(--green); }
+  .home-card.abalar .home-card-icon { background: rgba(59,130,246,0.12); color: var(--accent2); }
+  .home-card h2 { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; color: #fff; margin-bottom: 8px; }
+  .home-card p { font-size: 13.5px; color: var(--text2); font-weight: 300; line-height: 1.6; margin-bottom: 20px; }
+  .home-card-meta { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text3); }
+  .home-card-arrow { position: absolute; bottom: 24px; right: 24px; color: var(--text3); transition: transform 0.2s, color 0.2s; }
+  .home-card:hover .home-card-arrow { transform: translateX(4px); color: var(--text2); }
 
-        .card.disabled { opacity: 0.5; cursor: default; border-style: dashed; }
-        .card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; }
-        .card p { font-size: 0.85rem; color: var(--text-light); }
+  .home-tip { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px 28px; margin-bottom: 48px; }
+  .home-tip h3 { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .home-tip p { font-size: 13.5px; color: var(--text2); font-weight: 300; line-height: 1.7; }
+  .home-tip code { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: var(--surface); border: 1px solid var(--border); padding: 1px 6px; border-radius: 4px; color: var(--accent2); }
 
-        /* --- MODAL --- */
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(10px);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            padding: 20px;
-        }
+  /* ── TAB NAV ── */
+  .tab-nav { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 40px; position: sticky; top: 56px; background: var(--bg); z-index: 40; }
+  .tab-btn { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; padding: 14px 28px; background: none; border: none; border-bottom: 2px solid transparent; color: var(--text3); cursor: pointer; transition: all 0.15s; }
+  .tab-btn:hover { color: var(--text2); }
+  .tab-btn.act-linux { color: var(--green); border-bottom-color: var(--green); }
+  .tab-btn.act-abalar { color: var(--accent2); border-bottom-color: var(--accent); }
 
-        .modal {
-            background: var(--bg);
-            width: 100%;
-            max-width: 700px;
-            border-radius: 32px;
-            padding: 3rem;
-            position: relative;
-            max-height: 90vh;
-            overflow-y: auto;
-            border: 1px solid var(--border);
-        }
+  /* ── SECTION HERO ── */
+  .section-hero { margin-bottom: 40px; padding-bottom: 32px; border-bottom: 1px solid var(--border); }
+  .badge { display: inline-flex; align-items: center; gap: 6px; font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; padding: 4px 10px; border-radius: 4px; margin-bottom: 16px; }
+  .badge.linux { background: rgba(34,197,94,0.12); color: var(--green); border: 1px solid rgba(34,197,94,0.3); }
+  .badge.abalar { background: rgba(59,130,246,0.12); color: var(--accent2); border: 1px solid rgba(59,130,246,0.3); }
+  .section-hero h1 { font-family: 'Syne', sans-serif; font-size: 42px; font-weight: 800; letter-spacing: -1px; line-height: 1.1; color: #fff; margin-bottom: 12px; }
+  .section-hero p { font-size: 15px; color: var(--text2); max-width: 620px; font-weight: 300; }
 
-        .close-btn {
-            position: absolute;
-            top: 25px;
-            right: 25px;
-            background: var(--surface);
-            border: none;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            cursor: pointer;
-            color: var(--text);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+  /* ── GUIDE BLOCKS ── */
+  .guide-block { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-lg); margin-bottom: 14px; overflow: hidden; transition: border-color 0.2s; }
+  .guide-block:hover { border-color: var(--surface2); }
 
-        /* --- CONTENIDO --- */
-        .modal h2 { font-size: 2rem; margin-bottom: 1.5rem; letter-spacing: -1px; }
+  .guide-block-header { display: flex; align-items: center; gap: 14px; padding: 18px 22px; cursor: pointer; user-select: none; border-bottom: 1px solid transparent; transition: background 0.15s; }
+  .guide-block-header:hover { background: var(--surface); }
+  .guide-block.open .guide-block-header { border-bottom-color: var(--border); background: var(--surface); }
 
-        pre {
-            background: #111;
-            color: #fff;
-            padding: 1.5rem;
-            border-radius: 16px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.85rem;
-            line-height: 1.7;
-            margin: 1.5rem 0;
-            position: relative;
-            overflow-x: auto;
-            border: 1px solid #333;
-        }
+  .guide-block-num { width: 30px; height: 30px; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+  .linux .guide-block-num { background: rgba(34,197,94,0.15); color: var(--green); border: 1px solid rgba(34,197,94,0.25); }
+  .abalar .guide-block-num { background: rgba(59,130,246,0.15); color: var(--accent2); border: 1px solid rgba(59,130,246,0.25); }
 
-        .copy-btn {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            background: #333;
-            color: #eee;
-            border: 1px solid #444;
-            padding: 5px 10px;
-            border-radius: 8px;
-            font-size: 0.7rem;
-            cursor: pointer;
-            transition: 0.2s;
-        }
+  .guide-block-title { flex: 1; font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; color: var(--text); }
 
-        .copy-btn:hover { background: var(--accent); border-color: var(--accent); }
+  .guide-block-chevron { color: var(--text3); transition: transform 0.25s; flex-shrink: 0; }
+  .guide-block.open .guide-block-chevron { transform: rotate(90deg); }
 
-        .info-pill {
-            background: #eef2ff;
-            color: #4f46e5;
-            padding: 12px 20px;
-            border-radius: 12px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            margin: 1rem 0;
-            display: inline-block;
-        }
+  .guide-block-body { display: none; padding: 24px; }
+  .guide-block.open .guide-block-body { display: block; }
 
-        [data-theme="dark"] .info-pill { background: #1e293b; color: #818cf8; }
+  /* typography inside blocks */
+  .guide-block-body p { color: var(--text2); margin-bottom: 16px; font-size: 14px; font-weight: 300; }
+  .guide-block-body h3 { font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; color: var(--text); margin: 22px 0 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .guide-block-body h3:first-child { margin-top: 4px; }
+  .guide-block-body ul { margin: 0 0 16px 18px; color: var(--text2); font-size: 14px; }
+  .guide-block-body ul li { margin-bottom: 4px; }
+  .guide-block-body code { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: var(--surface); border: 1px solid var(--border); padding: 1px 5px; border-radius: 4px; color: var(--accent2); }
+  .note { background: rgba(59,130,246,0.07); border-left: 3px solid var(--accent); border-radius: 0 6px 6px 0; padding: 12px 16px; margin-bottom: 16px; font-size: 13.5px; color: var(--text2); }
+  /* Linux=verde: sus notas usan verde. Abalar=azul: notas ya usan azul por defecto */
+  .guide-block.linux .note { background: rgba(34,197,94,0.07); border-left-color: var(--green); }
+  .note.green { background: rgba(34,197,94,0.07); border-left-color: var(--green); }
+  /* Linux=verde, Abalar=azul — las notas dentro de bloques linux usan verde */
+  .guide-block.linux .note:not(.green) { background: rgba(34,197,94,0.07); border-left-color: var(--green); }
+  .guide-block.abalar .note.green { background: rgba(59,130,246,0.07); border-left-color: var(--accent); }
+  .warn { background: rgba(251,191,36,0.07); border-left: 3px solid #fbbf24; border-radius: 0 6px 6px 0; padding: 12px 16px; margin-bottom: 16px; font-size: 13.5px; color: #fde68a; }
 
-        .url-btn {
-            display: inline-block;
-            background: var(--primary);
-            color: var(--bg);
-            padding: 12px 24px;
-            border-radius: 12px;
-            text-decoration: none;
-            font-weight: 600;
-            margin-top: 10px;
-        }
-    </style>
+  /* ── CODE BLOCKS ── */
+  .code-wrap { position: relative; margin: 12px 0 18px; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--code-border); }
+  .code-label { display: flex; align-items: center; justify-content: space-between; background: #0d1520; padding: 7px 14px; border-bottom: 1px solid var(--code-border); }
+  .code-label span { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text3); letter-spacing: 0.5px; }
+  .copy-btn { display: flex; align-items: center; gap: 5px; background: var(--surface); border: 1px solid var(--border); color: var(--text2); font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 3px 10px; border-radius: 4px; cursor: pointer; transition: all 0.15s; }
+  .copy-btn:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .copy-btn.copied { background: var(--green); border-color: var(--green); color: #fff; }
+
+  /* IMPORTANTE: usar <pre> y textContent para copiar limpio */
+  pre.code-block { background: var(--code-bg); padding: 16px 18px; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.7; color: #e2e8f0; white-space: pre; margin: 0; }
+  pre.code-block::-webkit-scrollbar { height: 4px; }
+  pre.code-block::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  /* ── LINK BUTTON ── */
+  .link-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--surface); border: 1px solid var(--border);
+    color: var(--text); text-decoration: none;
+    font-family: 'JetBrains Mono', monospace; font-size: 13px;
+    padding: 10px 18px; border-radius: var(--radius);
+    transition: all 0.15s; margin: 4px 0 16px;
+  }
+  .link-btn:hover { background: var(--green); border-color: var(--green); color: #fff; }
+  .guide-block.abalar .link-btn:hover { background: var(--accent); border-color: var(--accent); }
+
+  /* footer */
+  footer { margin-top: 60px; padding: 20px 0; border-top: 1px solid var(--border); font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text3); }
+
+  /* overlay mobile */
+  #overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 90; }
+  #overlay.open { display: block; }
+
+  @media (max-width: 768px) {
+    #sidebar { transform: translateX(-100%); }
+    #sidebar.open { transform: translateX(0); }
+    #main { margin-left: 0; }
+    #content { padding: 28px 18px; }
+    #hamburger { display: flex; }
+    .section-hero h1 { font-size: 30px; }
+    .home-hero h1 { font-size: 38px; }
+    .home-cards { grid-template-columns: 1fr; }
+    #topbar { padding: 0 18px; }
+  }
+</style>
 </head>
 <body>
 
-    <nav>
-        <div class="logo">ABALAR EXPLOITS.</div>
-        <div class="nav-right">
-            <div style="font-size: 0.8rem; font-weight: 600; opacity: 0.5;">v2.6.0</div>
-            <button class="theme-toggle" onclick="toggleTheme()">
-                <svg id="themeIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></svg>
-            </button>
-        </div>
-    </nav>
+<!-- SIDEBAR -->
+<nav id="sidebar">
+  <div class="sidebar-logo" onclick="showPage('home')">
+    <div class="logo-main">ABALAR <span>EXPLOITS</span></div>
+    <div class="logo-sub">Guía Técnica</div>
+  </div>
 
-    <div class="hero">
-        <h1>ABALAR EXPLOITS.</h1>
-        <p>Recursos y scripts para ordenadores con Abalar 11 y 12.</p>
+  <div class="sidebar-home-btn active" id="nav-home" onclick="showPage('home')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    Inicio
+  </div>
 
-        <div class="grid">
-            <div class="card" onclick="openModal('wifi')">
-                <h3>WiFi Abalar</h3>
-                <p>Acceso a red ABALAR</p>
-            </div>
-            <div class="card" onclick="openModal('root')">
-                <h3>Root Perms</h3>
-                <p>Privilegios de administrador</p>
-            </div>
-            <div class="card" onclick="openModal('epoptes')">
-                <h3>Instalar Epoptes</h3>
-                <p>Despliegue de software</p>
-            </div>
-            <div class="card" onclick="openModal('parental')">
-                <h3>Bypass Parental</h3>
-                <p>Eliminar restricciones web</p>
-            </div>
-            <div class="card disabled">
-                <h3>Por descubrir</h3>
-                <p>Próximamente...</p>
-            </div>
-            <div class="card disabled">
-                <h3>Por descubrir</h3>
-                <p>Próximamente...</p>
-            </div>
+  <div class="sidebar-section-title linux">// Abalinux</div>
+  <div id="sl-linux"></div>
+
+  <div class="sidebar-section-title abalar">// Abalar</div>
+  <div id="sl-abalar"></div>
+</nav>
+
+<div id="overlay" onclick="closeSidebar()"></div>
+
+<!-- MAIN -->
+<div id="main">
+  <div id="topbar">
+    <div class="topbar-bc" id="bc">ABALAR EXPLOITS / <span>Inicio</span></div>
+    <button id="hamburger" onclick="toggleSidebar()">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+  </div>
+
+  <div id="content">
+
+    <!-- ══════════════════════ HOME ══════════════════════ -->
+    <div id="page-home" class="page active">
+      <div class="home-hero">
+        <div class="home-eyebrow">// Documentación técnica</div>
+        <h1>ABALAR <span class="dim">EXPLOITS</span></h1>
+        <p class="subtitle">Guía de referencia para la configuración del entorno educativo Abalinux y la plataforma Abalar. Comandos, procedimientos y soluciones paso a paso.</p>
+      </div>
+
+      <div class="home-cards">
+        <div class="home-card linux" onclick="showPage('linux')">
+          <div class="home-card-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          </div>
+          <h2>Abalinux</h2>
+          <p>Instalación del sistema operativo, hacer que parezca Abalar, configurar el WiFi e instalar Epoptes.</p>
+          <div class="home-card-meta" id="count-linux">— guías</div>
+          <div class="home-card-arrow"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
         </div>
+
+        <div class="home-card abalar" onclick="showPage('abalar')">
+          <div class="home-card-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3z"/><path d="M5 13.18v4L12 21l7-3.82v-4"/></svg>
+          </div>
+          <h2>Abalar</h2>
+          <p>Acceso a permisos de administrador, desinstalar control parental e instalar aplicaciones.</p>
+          <div class="home-card-meta" id="count-abalar">— guías</div>
+          <div class="home-card-arrow"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
+        </div>
+      </div>
+
+      <footer>ABALAR EXPLOITS — Guía Técnica</footer>
     </div>
 
-    <div class="modal-overlay" id="overlay">
-        <div class="modal">
-            <button class="close-btn" onclick="closeModal()">×</button>
-            <div id="modalContent"></div>
+
+    <!-- ══════════════════════ ABALINUX ══════════════════════ -->
+    <div id="page-linux" class="page">
+      <div class="tab-nav">
+        <button class="tab-btn act-linux" onclick="showPage('linux')">Abalinux</button>
+        <button class="tab-btn" onclick="showPage('abalar')">Abalar</button>
+      </div>
+
+      <div class="section-hero">
+        <div class="badge linux">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+          Abalinux
         </div>
-    </div>
+        <h1>Guía de<br>Abalinux</h1>
+        <p>Instalación del sistema operativo, hacer que parezca Abalar, configurar el WiFi e instalar Epoptes.</p>
+      </div>
 
-    <script>
-        // Lógica de Temas
-        function updateThemeIcon() {
-            const icon = document.getElementById('themeIcon');
-            const isDark = document.body.hasAttribute('data-theme');
-            icon.innerHTML = isDark 
-                ? '<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>'
-                : '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
-        }
+      <!-- ╔══════════════════════════════════════════════════
+           ║  BLOQUES ABALINUX  —  añade los tuyos debajo
+           ╚══════════════════════════════════════════════════ -->
 
-        function toggleTheme() {
-            if (document.body.hasAttribute('data-theme')) {
-                document.body.removeAttribute('data-theme');
-            } else {
-                document.body.setAttribute('data-theme', 'dark');
-            }
-            updateThemeIcon();
-        }
-        updateThemeIcon();
+      <div class="guide-block linux" id="block-instalar-abalinux">
+        <div class="guide-block-header" onclick="toggleBlock(this)">
+          <div class="guide-block-num linux">01</div>
+          <div class="guide-block-title">Instalar Abalinux 11/12</div>
+          <svg class="guide-block-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+        <div class="guide-block-body">
+          <div class="note">El flasheo de la imagen ISO debe hacerse desde un dispositivo con <strong>Windows</strong>.</div>
 
-        // Lógica de Copiado
-        async function copyCode(btn, text) {
-            await navigator.clipboard.writeText(text);
-            const oldText = btn.innerText;
-            btn.innerText = "¡Copiado!";
-            setTimeout(() => btn.innerText = oldText, 2000);
-        }
+          <h3>Paso 1 — Descargar la imagen ISO</h3>
+          <p>Descarga la imagen oficial de Abalinux desde el enlace:</p>
+          <a href="https://espazoabalar.edu.xunta.gal/es/maqueta-abalar-libre" target="_blank" class="link-btn">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            Descargar Abalinux ISO
+          </a>
 
-        const scripts = {
-            wifi: {
-                title: "WiFi ABALAR | IES VALLE IN-CLÁN",
-                content: `
-                    <h2>WiFi ABALAR</h2>
-                    <p>Contraseña:</p>
-                    <div class="info-pill">166f0b08dff0032f1224a6cd9b449d816fe295cf148ff6360327f1fa129c900c</div>
-                    <p>Comandos para ponerlo:</p>
-                    <pre><button class="copy-btn" onclick="copyCode(this, \`nmcli connection delete \\"ABALAR\\"\\n\\nnmcli connection add type wifi con-name \\"ABALAR\\" ssid \\"ABALAR\\"\\n\\nnmcli connection modify \\"ABALAR\\" wifi-sec.key-mgmt wpa-psk\\nnmcli connection modify \\"ABALAR\\" wifi-sec.psk \\"166f0b08dff0032f1224a6cd9b449d816fe295cf148ff6360327f1fa129c900c\\"\\nnmcli connection up \\"ABALAR\\"\`)">Copiar</button>nmcli connection delete "ABALAR"\n\nnmcli connection add type wifi con-name "ABALAR" ssid "ABALAR"\n\nnmcli connection modify "ABALAR" wifi-sec.key-mgmt wpa-psk\nnmcli connection modify "ABALAR" wifi-sec.psk "166f0b08dff0032f1224a6cd9b449d816fe295cf148ff6360327f1fa129c900c"\nnmcli connection up "ABALAR"</pre>
-                `
-            },
-            root: {
-                title: "CONSEGUIR PERMISOS ADMINISTRADOR",
-                content: `
-                    <h2>Permisos Administrador</h2>
-                    <p>Cuando este en la pantalla de inicio presionar F2 para entrar a los ajustes y darle otra vez al F2 para enrar al editor de boot, luego ir con la flechita de abajo hasta el final,</p>
-                    <div class="info-pill">PONER UN ESPACIO y luego init=/bin/bash</div>
-                    <p>Luego dale al Enter y te entrará a una consola de Root (Administrador) donde tendrás que poner en orden estos comandos.</p>
-                    <pre><button class="copy-btn" onclick="copyCode(this, 'mount -o remount,rw /\\nchmod 4755 /bin/su\\necho \\'usuario ALL=(ALL:ALL) NOPASSWD: ALL\\' > /etc/sudoers.d/usuario\\necho \\'usuario ALL=(ALL:ALL) NOPASSWD: ALL\\' >> /etc/sudoers\\nusermod -s /bin/bash root\\nusermod -s /bin/bash usuario\\npasswd root')">Copiar</button>mount -o remount,rw /\nchmod 4755 /bin/su\necho "usuario ALL=(ALL:ALL) NOPASSWD: ALL" > /etc/sudoers.d/usuario\necho "usuario ALL=(ALL:ALL) NOPASSWD: ALL" >> /etc/sudoers\nusermod -s /bin/bash root\nusermod -s /bin/bash usuario\npasswd root</pre>
-                    <p>Cuando pida contraseña poner <b>toor</b> las dos veces que pide.</p>
-                    <p>Luego mantener el botón de apagar hasta que se apague y al encender y abrir una consola, para usar los permisos de administrador deberas poner:</p>
-                    <pre><button class="copy-btn" onclick="copyCode(this, 'su -')">Copiar</button>su -</pre>
-                    <p>Y cuando pida contraseña poner <b>toor</b>. Y así podrás acceder a una consola de Root (Administrador).</p>
-                `
-            },
-            epoptes: {
-                title: "INSTALAR EPOPTES",
-                content: `
-                    <h2>Instalar Epoptes</h2>
-                    <p>Seguir pasos del siguiente enlace:</p>
-                    <a href="https://centros.edu.xunta.gal/abalar/aulavirtual/mod/page/view.php?id=4342" class="url-btn" target="_blank">Enlace Abalar</a>
-                    <div class="info-pill" style="margin-top:20px;">Cuando pida poner SERVER=server.local, reemplazar el server.local por la IP de tu clase</div>
-                `
-            },
-            parental: {
-                title: "DESINSTALAR CTPARENTAL",
-                content: `
-                    <h2>Desinstalar CTparental</h2>
-                    <p>Para quitarle el bloqueo a todas las páginas webs (Instagram, TikTok...).</p>
-                    <p style="color:var(--accent); font-size:0.8rem; margin-bottom:10px;">* Requiere permisos de administrador antes.</p>
-                    <pre><button class="copy-btn" onclick="copyCode(this, \`sudo CTparental -off\\nsudo systemctl stop ctparental\\nsudo systemctl disable ctparental\\nsudo apt-get remove --purge ctparental\\nsudo apt-get autoremove\\ndpkg -l | grep -i parental\\nsudo apt-get remove --purge -y ctparental*\`)">Copiar</button>sudo CTparental -off\nsudo systemctl stop ctparental\nsudo systemctl disable ctparental\nsudo apt-get remove --purge ctparental\nsudo apt-get autoremove\ndpkg -l | grep -i parental\nsudo apt-get remove --purge -y ctparental*</pre>
-                `
-            }
-        };
+          <h3>Paso 2 — Flashear el pendrive</h3>
+          <p>Inserta un pendrive de <strong>mínimo 16 GB</strong> en el ordenador Windows y usa un programa como <strong>Balena Etcher</strong> para flashear la ISO en el pendrive.</p>
 
-        function openModal(key) {
-            document.getElementById('modalContent').innerHTML = scripts[key].content;
-            document.getElementById('overlay').style.display = 'flex';
-            document.body.style.overflow = 'hidden';
-        }
+          <h3>Paso 3 — Arrancar desde el pendrive</h3>
+          <p>Inserta el pendrive en el dispositivo donde quieres instalar Abalinux. Al encenderlo arrancará como <strong>Live USB</strong> directamente.</p>
 
-        function closeModal() {
-            document.getElementById('overlay').style.display = 'none';
-            document.body.style.overflow = 'auto';
-        }
+          <h3>Paso 4 — Instalar</h3>
+          <p>Una vez dentro del Live USB, ve a <strong>Aplicacións &gt; Sistema &gt; Instalador de Snapshot Live</strong> y sigue los pasos hasta que termine la instalación.</p>
 
-        window.onclick = e => { if(e.target.id === 'overlay') closeModal(); }
-    </script>
+          <div class="note">Cuando termine la instalación, quita el pendrive y reinicia. Abalinux quedará instalado en el ordenador.</div>
+        </div>
+      </div>
+
+      <div class="guide-block linux" id="block-fondo">
+        <div class="guide-block-header" onclick="toggleBlock(this)">
+          <div class="guide-block-num linux">02</div>
+          <div class="guide-block-title">Cambiar el fondo de pantalla al de Abalar</div>
+          <svg class="guide-block-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+        <div class="guide-block-body">
+          <p>Pasos para reemplazar el fondo de pantalla por el fondo oficial de Abalar.</p>
+
+          <h3>Paso 1 — Descargar el fondo</h3>
+          <a href="https://files.catbox.moe/l0l612" target="_blank" class="link-btn">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            Descargar fondo de Abalar
+          </a>
+
+          <h3>Paso 2 — Renombrar el archivo</h3>
+          <p>Renombra el archivo descargado de <code>l0l612</code> a <code>default</code> (sin extensión).</p>
+
+          <h3>Paso 3 — Reemplazar el fondo del sistema</h3>
+          <p>Abre una terminal como administrador (<code>su -</code>) y ejecuta estos comandos:</p>
+          <div class="code-wrap">
+            <div class="code-label"><span>bash — consola root</span><button class="copy-btn" onclick="copyCode(this)">Copiar</button></div>
+            <pre class="code-block">rm /usr/share/images/desktop-base/default
+mv /home/usuario/Descargas/default /usr/share/images/desktop-base/</pre>
+          </div>
+
+          <div class="note">El fondo se habrá cambiado. Cierra sesión y vuelve a entrar para verlo aplicado.</div>
+        </div>
+      </div>
+
+      <div class="guide-block linux" id="block-wifi">
+        <div class="guide-block-header" onclick="toggleBlock(this)">
+          <div class="guide-block-num linux">03</div>
+          <div class="guide-block-title">Conectar al WiFi ABALAR — IES Valle Inclán</div>
+          <svg class="guide-block-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+        <div class="guide-block-body">
+          <p>Pasos para conectarse a la red WiFi <strong>ABALAR</strong> del IES Valle Inclán mediante <code>nmcli</code>. Estos comandos eliminan la conexión guardada anterior (si existe) y crean una nueva con la contraseña correcta.</p>
+
+          <div class="note">La contraseña es larga, cópiala exactamente tal como aparece. No la escribas a mano.</div>
+
+          <h3>Contraseña de la red</h3>
+          <div class="code-wrap">
+            <div class="code-label"><span>contraseña WiFi</span><button class="copy-btn" onclick="copyCode(this)">Copiar</button></div>
+            <pre class="code-block">166f0b08dff0032f1224a6cd9b449d816fe295cf148ff6360327f1fa129c900c</pre>
+          </div>
+
+          <h3>Comandos para conectarse</h3>
+          <p>Ejecuta estos comandos en orden, uno a uno:</p>
+          <div class="code-wrap">
+            <div class="code-label"><span>bash — ejecutar en orden</span><button class="copy-btn" onclick="copyCode(this)">Copiar</button></div>
+            <pre class="code-block">nmcli connection delete "ABALAR"
+nmcli connection add type wifi con-name "ABALAR" ssid "ABALAR"
+nmcli connection modify "ABALAR" wifi-sec.key-mgmt wpa-psk
+nmcli connection modify "ABALAR" wifi-sec.psk "166f0b08dff0032f1224a6cd9b449d816fe295cf148ff6360327f1fa129c900c"
+nmcli connection up "ABALAR"</pre>
+          </div>
+
+          <div class="warn">⚠️ El primer comando (<code>connection delete</code>) puede dar error si la red no existía antes — es normal, continúa con el siguiente.</div>
+
+          <h3>Verificar la conexión</h3>
+          <div class="code-wrap">
+            <div class="code-label"><span>bash</span><button class="copy-btn" onclick="copyCode(this)">Copiar</button></div>
+            <pre class="code-block">nmcli connection show --active</pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="guide-block linux" id="block-epoptes">
+        <div class="guide-block-header" onclick="toggleBlock(this)">
+          <div class="guide-block-num linux">04</div>
+          <div class="guide-block-title">Instalar Epoptes</div>
+          <svg class="guide-block-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+        <div class="guide-block-body">
+          <p>Epoptes es una herramienta de monitorización y control de aulas. Permite al profesor ver, controlar o bloquear los ordenadores de los alumnos en tiempo real.</p>
+
+          <div class="note">Sigue los pasos del enlace oficial. Cuando el proceso pida poner <code>SERVER=server.local</code>, sustituye <code>server.local</code> por la <strong>IP de tu clase</strong>.</div>
+
+          <h3>Pasos oficiales de instalación</h3>
+          <a href="https://centros.edu.xunta.gal/abalar/aulavirtual/mod/page/view.php?id=4342" target="_blank" class="link-btn">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            Abrir guía oficial de Epoptes
+          </a>
+
+          <div class="warn">⚠️ Recuerda: cuando te pida poner <code>server.local</code>, pon la IP de tu clase.</div>
+        </div>
+      </div>
+
+      <!-- ╔══════════════════════════════════════════════════
+           ║  PLANTILLA ABALINUX — copia desde aquí
+           ╚══════════════════════════════════════════════════
+      <div class="guide-block linux" id="block-NOMBRE">
+        <div class="guide-block-header" onclick="toggleBlock(this)">
+          <div class="guide-block-num linux">05</div>
+          <div class="guide-block-title">Título del bloque</div>
+          <svg class="guide-block-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+        <div class="guide-block-body">
+          <p>Descripción del bloque.</p>
+          <h3>Paso 1</h3>
+          <div class="code-wrap">
+            <div class="code-label"><span>bash</span><button class="copy-btn" onclick="copyCode(this)">Copiar</button></div>
+            <pre class="code-block">tu-comando-aqui</pre>
+          </div>
+          <div class="note">Nota informativa.</div>
+          <div class="warn">⚠️ Advertencia importante.</div>
+        </div>
+      </div>
+      -->
+
+      <footer>ABALAR EXPLOITS — Guía Técnica</footer>
+    </div><!-- /page-linux -->
+
+
+    <!-- ══════════════════════ ABALAR ══════════════════════ -->
+    <div id="page-abalar" class="page">
+      <div class="tab-nav">
+        <button class="tab-btn" onclick="showPage('linux')">Abalinux</button>
+        <button class="tab-btn act-abalar" onclick="showPage('abalar')">Abalar</button>
+      </div>
+
+      <div class="section-hero">
+        <div class="badge abalar">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/></svg>
+          Abalar
+        </div>
+        <h1>Guía de<br>Abalar</h1>
+        <p>Acceso a permisos de administrador, desinstalar control parental e instalar aplicaciones.</p>
+      </div>
+
+      <!-- ╔══════════════════════════════════════════════════
+           ║  BLOQUES ABALAR  —  añade los tuyos debajo
+           ╚══════════════════════════════════════════════════ -->
+
+      <div class="guide-block abalar" id="block-permisos">
+        <div class="guide-block-header" onclick="toggleBlock(this)">
+          <div class="guide-block-num abalar">04</div>
+          <div class="guide-block-title">Conseguir permisos de administrador</div>
+          <svg class="guide-block-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+        <div class="guide-block-body">
+          <p>Este método accede al editor de arranque del sistema para obtener una consola de root sin contraseña. A partir de ahí se configura el usuario para tener acceso completo de administrador.</p>
+
+          <div class="warn">⚠️ Uso responsable. Este procedimiento otorga control total sobre el dispositivo.</div>
+
+          <h3>Paso 1 — Entrar al editor de boot</h3>
+          <ul>
+            <li>En la pantalla de inicio (GRUB), pulsa <strong>F2</strong> para entrar a los ajustes.</li>
+            <li>Pulsa <strong>F2</strong> de nuevo para abrir el editor de boot.</li>
+            <li>Usa la <strong>flecha abajo</strong> para ir al final de la línea.</li>
+            <li>Añade <strong>un espacio</strong> y escribe exactamente: <code>init=/bin/bash</code></li>
+            <li>Pulsa <strong>Enter</strong> para arrancar.</li>
+          </ul>
+
+          <div class="note">Entrarás a una consola de root sin interfaz gráfica.</div>
+
+          <h3>Paso 2 — Comandos en la consola de root</h3>
+          <p>Ejecuta los siguientes comandos en orden.</p>
+          <div class="code-wrap">
+            <div class="code-label"><span>bash — consola root (ejecutar en orden)</span><button class="copy-btn" onclick="copyCode(this)">Copiar</button></div>
+            <pre class="code-block">mount -o remount,rw /
+chmod 4755 /bin/su
+echo "usuario ALL=(ALL:ALL) NOPASSWD: ALL" > /etc/sudoers.d/usuario
+echo "usuario ALL=(ALL:ALL) NOPASSWD: ALL" >> /etc/sudoers
+usermod -s /bin/bash root
+usermod -s /bin/bash usuario
+passwd root</pre>
+          </div>
+          <div class="note">Cuando <code>passwd root</code> pida contraseña, escribe <strong>toor</strong> (dos veces).</div>
+
+          <h3>Paso 3 — Apagar y reiniciar</h3>
+          <p>Mantén el botón de apagado hasta que el equipo se apague. Al volver a encenderlo, abre una terminal y ejecuta:</p>
+          <div class="code-wrap">
+            <div class="code-label"><span>bash</span><button class="copy-btn" onclick="copyCode(this)">Copiar</button></div>
+            <pre class="code-block">su -</pre>
+          </div>
+          <p>Cuando pida contraseña escribe <strong>toor</strong>. Ya tendrás acceso a una consola de root con control total del dispositivo: puedes instalar, borrar y configurar cualquier cosa.</p>
+        </div>
+      </div>
+
+      <div class="guide-block abalar" id="block-ctparental">
+        <div class="guide-block-header" onclick="toggleBlock(this)">
+          <div class="guide-block-num abalar">05</div>
+          <div class="guide-block-title">Desinstalar CTparental (control parental)</div>
+          <svg class="guide-block-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+        <div class="guide-block-body">
+          <p>CTparental es el sistema de bloqueo de páginas web instalado en Abalinux. Desinstalarlo permite acceder a cualquier página web (Instagram, TikTok, etc.). Para hacerlo <strong>necesitas permisos de administrador</strong> primero (ver bloque anterior).</p>
+
+          <div class="warn">⚠️ Necesitas tener una consola de root abierta (<code>su -</code>) antes de ejecutar estos comandos.</div>
+
+          <h3>Desactivar y desinstalar CTparental</h3>
+          <p>Ejecuta estos comandos en orden desde la consola de administrador:</p>
+          <div class="code-wrap">
+            <div class="code-label"><span>bash — consola root (ejecutar en orden)</span><button class="copy-btn" onclick="copyCode(this)">Copiar</button></div>
+            <pre class="code-block">sudo CTparental -off
+sudo systemctl stop ctparental
+sudo systemctl disable ctparental
+sudo apt-get remove --purge ctparental
+sudo apt-get autoremove
+dpkg -l | grep -i parental
+sudo apt-get remove --purge -y ctparental*</pre>
+          </div>
+
+          <div class="note">Después de ejecutar todos los comandos, el bloqueo de páginas habrá desaparecido.</div>
+        </div>
+      </div>
+
+      <!-- ╔══════════════════════════════════════════════════
+           ║  PLANTILLA ABALAR — copia desde aquí
+           ╚══════════════════════════════════════════════════
+      <div class="guide-block abalar" id="block-NOMBRE">
+        <div class="guide-block-header" onclick="toggleBlock(this)">
+          <div class="guide-block-num abalar">04</div>
+          <div class="guide-block-title">Título del bloque</div>
+          <svg class="guide-block-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+        <div class="guide-block-body">
+          <p>Descripción del bloque.</p>
+          <h3>Paso 1</h3>
+          <div class="code-wrap">
+            <div class="code-label"><span>bash</span><button class="copy-btn" onclick="copyCode(this)">Copiar</button></div>
+            <pre class="code-block">tu-comando-aqui</pre>
+          </div>
+          <div class="note green">Nota.</div>
+          <div class="warn">⚠️ Advertencia.</div>
+        </div>
+      </div>
+      -->
+
+      <footer>ABALAR EXPLOITS — Guía Técnica</footer>
+    </div><!-- /page-abalar -->
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<script>
+  // ═══ PÁGINAS ═══
+  function showPage(name) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-' + name).classList.add('active');
+    const labels = { home: 'Inicio', linux: 'Abalinux', abalar: 'Abalar' };
+    document.getElementById('bc').innerHTML = 'ABALAR EXPLOITS / <span>' + labels[name] + '</span>';
+    document.getElementById('nav-home').classList.toggle('active', name === 'home');
+    window.scrollTo({ top: 0 });
+    closeSidebar();
+  }
+
+  // ═══ ACORDEÓN — solo uno abierto a la vez ═══
+  function toggleBlock(header) {
+    var block = header.parentElement;
+    var page = block.closest('.page');
+    var isOpen = block.classList.contains('open');
+    // Cerrar todos los bloques de la misma página
+    page.querySelectorAll('.guide-block.open').forEach(function(b) {
+      b.classList.remove('open');
+    });
+    // Si estaba cerrado, abrirlo
+    if (!isOpen) block.classList.add('open');
+  }
+
+  function openBlock(id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    var page = el.closest('.page');
+    // Cerrar todos
+    page.querySelectorAll('.guide-block.open').forEach(function(b) { b.classList.remove('open'); });
+    // Abrir el target
+    el.classList.add('open');
+    // Scroll con offset del topbar (56px) + pequeño margen
+    setTimeout(function() {
+      var top = el.getBoundingClientRect().top + window.scrollY - 72;
+      window.scrollTo({ top: top, behavior: 'smooth' });
+    }, 30);
+  }
+
+  // ═══ COPIAR CÓDIGO ═══
+  // Usando textContent sobre el <pre> → texto limpio, sin HTML
+  function copyCode(btn) {
+    var pre = btn.closest('.code-wrap').querySelector('pre.code-block');
+    var text = pre.textContent.trim();
+
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(function() { flashCopied(btn); });
+    } else {
+      // Fallback: textarea + execCommand (funciona abriendo el .html directamente)
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;pointer-events:none';
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      try { document.execCommand('copy'); } catch(e) {}
+      document.body.removeChild(ta);
+      flashCopied(btn);
+    }
+  }
+
+  function flashCopied(btn) {
+    btn.textContent = '✓ Copiado';
+    btn.classList.add('copied');
+    setTimeout(function() { btn.textContent = 'Copiar'; btn.classList.remove('copied'); }, 1800);
+  }
+
+  // ═══ SIDEBAR DINÁMICO ═══
+  function buildSidebar() {
+    var lc = 0, ac = 0;
+
+    document.querySelectorAll('#page-linux .guide-block').forEach(function(block) {
+      lc++;
+      var a = makeSidebarLink(block.querySelector('.guide-block-title').textContent, block.id, 'linux');
+      document.getElementById('sl-linux').appendChild(a);
+    });
+
+    document.querySelectorAll('#page-abalar .guide-block').forEach(function(block) {
+      ac++;
+      var a = makeSidebarLink(block.querySelector('.guide-block-title').textContent, block.id, 'abalar');
+      document.getElementById('sl-abalar').appendChild(a);
+    });
+
+    document.getElementById('count-linux').textContent = lc + ' guía' + (lc !== 1 ? 's' : '');
+    document.getElementById('count-abalar').textContent = ac + ' guía' + (ac !== 1 ? 's' : '');
+  }
+
+  function makeSidebarLink(title, id, section) {
+    var a = document.createElement('div');
+    a.className = 'sidebar-link';
+    a.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>' + title;
+    a.onclick = function() {
+      showPage(section);
+      setTimeout(function() { openBlock(id); }, 80);
+    };
+    return a;
+  }
+
+  // ═══ MOBILE ═══
+  function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('overlay').classList.toggle('open');
+  }
+  function closeSidebar() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('overlay').classList.remove('open');
+  }
+
+  buildSidebar();
+</script>
 </body>
 </html>
