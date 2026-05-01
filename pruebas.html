@@ -651,11 +651,15 @@ nmcli connection up "ABALAR"</pre>
           <div class="code-wrap">
             <div class="code-label"><span>bash — consola root (ejecutar en orden)</span><button class="copy-btn" onclick="copyCode(this)">Copiar</button></div>
             <pre class="code-block">mount -o remount,rw /
+
 chmod 4755 /bin/su
+
 echo "usuario ALL=(ALL:ALL) NOPASSWD: ALL" > /etc/sudoers.d/usuario
 echo "usuario ALL=(ALL:ALL) NOPASSWD: ALL" >> /etc/sudoers
+
 usermod -s /bin/bash root
 usermod -s /bin/bash usuario
+
 passwd root</pre>
           </div>
           <div class="note">Cuando <code>passwd root</code> pida contraseña, escribe <strong>toor</strong> (dos veces).</div>
@@ -686,15 +690,67 @@ passwd root</pre>
           <div class="code-wrap">
             <div class="code-label"><span>bash — consola root (ejecutar en orden)</span><button class="copy-btn" onclick="copyCode(this)">Copiar</button></div>
             <pre class="code-block">sudo CTparental -off
+
 sudo systemctl stop ctparental
 sudo systemctl disable ctparental
+
 sudo apt-get remove --purge ctparental
 sudo apt-get autoremove
+
 dpkg -l | grep -i parental
 sudo apt-get remove --purge -y ctparental*</pre>
           </div>
 
           <div class="note">Después de ejecutar todos los comandos, el bloqueo de páginas habrá desaparecido.</div>
+        </div>
+      </div>
+
+      <div class="guide-block abalar" id="block-actualizaciones">
+        <div class="guide-block-header" onclick="toggleBlock(this)">
+          <div class="guide-block-num abalar">03</div>
+          <div class="guide-block-title">Quitar Actualizaciones Automáticas</div>
+          <svg class="guide-block-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+        <div class="guide-block-body">
+          <p>Quitar las actualizaciones automáticas te permite que tanto los permisos de administrador como el desbloqueo de páginas web no se vayan nunca, ya que es este sistema el que se encarga de quitarte los permisos y volverte a instalar CTparental.</p>
+
+          <h3>Paso 1 — Entrar al editor de boot</h3>
+          <ul>
+            <li>En la pantalla de inicio (rEFInd), pulsa <strong>F2</strong> para entrar a los ajustes.</li>
+            <li>Pulsa <strong>F2</strong> de nuevo para abrir el editor de boot.</li>
+            <li>Usa la <strong>flecha abajo</strong> para ir al final de la línea.</li>
+            <li>Añade <strong>un espacio</strong> y escribe exactamente: <code>init=/bin/bash</code></li>
+            <li>Pulsa <strong>Enter</strong> para arrancar.</li>
+          </ul>
+          <div class="note">Entrarás a una consola de root sin interfaz gráfica.</div>
+
+          <h3>Paso 2 — Comandos en la consola de root</h3>
+          <p>Ejecuta los siguientes comandos en orden para bloquear las actualizaciones y proteger los permisos permanentemente.</p>
+          <div class="code-wrap">
+            <div class="code-label"><span>bash — consola root (ejecutar en orden)</span><button class="copy-btn" onclick="copyCode(this)">Copiar</button></div>
+            <pre class="code-block">mount -o remount,rw /
+
+echo "usuario ALL=(ALL:ALL) NOPASSWD: ALL" >> /etc/sudoers
+chattr +i /etc/sudoers
+
+echo "127.0.0.1 localhost" > /etc/hosts
+echo "127.0.0.1 repositorio.edu.xunta.gal" >> /etc/hosts
+echo "127.0.0.1 rrss.edu.xunta.gal" >> /etc/hosts
+echo "127.0.0.1 prestige.vinfo.es" >> /etc/hosts
+echo "127.0.0.1 servidor.centro" >> /etc/hosts
+chattr +i /etc/hosts
+
+rm -rf /usr/bin/ctparental
+touch /usr/bin/ctparental
+chattr +i /usr/bin/ctparental
+
+sync</pre>
+          </div>
+          <div class="note">El comando <code>chattr +i</code> hace los archivos inmutables — ni root puede modificarlos. Esto impide que las actualizaciones restauren CTparental o eliminen los permisos de sudo.</div>
+          <div class="note"><code>sync</code> asegura que todos los cambios se escriban correctamente en el disco antes de apagar.</div>
+
+          <h3>Paso 3 — Apagar y reiniciar</h3>
+          <p>Mantén el botón de apagado hasta que el equipo se apague. Al volver a encenderlo los cambios ya estarán aplicados de forma permanente.</p>
         </div>
       </div>
 
@@ -833,7 +889,7 @@ sudo apt-get remove --purge -y ctparental*</pre>
           <div class="status-badge"></div>
         </div>
 
-        <div class="status-item" data-status="unknown" data-section="abalar">
+        <div class="status-item" data-status="active" data-section="abalar">
           <div class="status-dot"></div>
           <div class="status-info">
             <div class="status-name">Quitar Actualizaciones Automáticas</div>
