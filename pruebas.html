@@ -352,9 +352,166 @@
     .home-cards { grid-template-columns: 1fr; }
     #topbar { padding: 0 18px; }
   }
+  /* ══ LOGIN ══ */
+  #login-overlay {
+    position: fixed; inset: 0; z-index: 9999;
+    background: #050507;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+  #login-overlay.hidden { display: none; }
+  #login-overlay::before {
+    content: '';
+    position: absolute; inset: -40px;
+    background-image:
+      linear-gradient(rgba(59,130,246,0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(59,130,246,0.035) 1px, transparent 1px);
+    background-size: 44px 44px;
+    animation: lgridScroll 18s linear infinite;
+    pointer-events: none;
+  }
+  #login-overlay::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 70% 60% at 50% 50%, rgba(59,130,246,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  @keyframes lgridScroll { 0%{transform:translateY(0)} 100%{transform:translateY(44px)} }
+  .login-wrap {
+    position: relative; z-index: 2;
+    display: flex; flex-direction: column; align-items: center; gap: 28px;
+    width: 100%; max-width: 420px; padding: 0 24px;
+  }
+  .login-head { text-align: center; animation: lFadeDown .6s cubic-bezier(.16,1,.3,1) both; }
+  .login-eyebrow {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    letter-spacing: 4px; text-transform: uppercase; color: #3b82f6;
+    margin-bottom: 14px; display: flex; align-items: center; justify-content: center; gap: 10px;
+  }
+  .login-eyebrow::before, .login-eyebrow::after {
+    content: ''; width: 36px; height: 1px; background: #3b82f6; opacity: .35;
+  }
+  .login-title {
+    font-family: 'Syne', sans-serif; font-size: 38px; font-weight: 800;
+    letter-spacing: -2px; color: #fff; line-height: 1;
+  }
+  .login-title span { color: #3b82f6; }
+  .login-tagline {
+    margin-top: 10px; font-size: 11px; color: rgba(255,255,255,0.28);
+    font-family: 'JetBrains Mono', monospace; letter-spacing: 1.5px;
+  }
+  .login-box {
+    width: 100%;
+    background: rgba(255,255,255,0.025);
+    border: 1px solid rgba(59,130,246,0.12);
+    border-radius: 20px; padding: 34px 30px 30px;
+    display: flex; flex-direction: column; gap: 18px;
+    backdrop-filter: blur(24px);
+    box-shadow: 0 0 0 1px rgba(59,130,246,0.04),
+                0 40px 100px rgba(0,0,0,0.7),
+                inset 0 1px 0 rgba(255,255,255,0.04);
+    animation: lFadeUp .6s .1s cubic-bezier(.16,1,.3,1) both;
+  }
+  .login-status-row {
+    display: flex; align-items: center; gap: 9px;
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    color: rgba(255,255,255,0.22); letter-spacing: 1.5px;
+    padding-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .login-status-dot {
+    width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
+    background: #3b82f6; box-shadow: 0 0 10px #3b82f6;
+    animation: lPulse 2s ease-in-out infinite;
+  }
+  @keyframes lPulse { 0%,100%{opacity:1} 50%{opacity:.35} }
+  .login-field { display: flex; flex-direction: column; gap: 8px; }
+  .login-field label {
+    font-size: 10px; letter-spacing: 2.5px; text-transform: uppercase;
+    color: rgba(255,255,255,0.28); font-family: 'JetBrains Mono', monospace;
+  }
+  .login-input-wrap { position: relative; }
+  .login-input-icon {
+    position: absolute; left: 13px; top: 50%; transform: translateY(-50%);
+    color: rgba(255,255,255,0.18); pointer-events: none; width: 16px; height: 16px;
+  }
+  .login-input {
+    background: rgba(0,0,0,0.45); border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 10px; padding: 13px 16px 13px 40px;
+    font-size: 20px; color: #fff; font-family: 'JetBrains Mono', monospace;
+    outline: none; width: 100%; box-sizing: border-box;
+    letter-spacing: 8px; transition: border-color .2s, box-shadow .2s;
+  }
+  .login-input::placeholder { letter-spacing: 4px; font-size: 13px; opacity: .25; }
+  .login-input:focus {
+    border-color: rgba(59,130,246,0.35);
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.06), 0 0 24px rgba(59,130,246,0.04);
+  }
+  .login-input.error {
+    border-color: rgba(239,68,68,0.55) !important;
+    box-shadow: 0 0 0 3px rgba(239,68,68,0.07) !important;
+    animation: lShake .35s ease;
+  }
+  @keyframes lShake {
+    0%,100%{transform:translateX(0)} 20%{transform:translateX(-8px)} 60%{transform:translateX(8px)} 80%{transform:translateX(-3px)}
+  }
+  .login-btn {
+    background: #3b82f6; color: #000; font-weight: 800;
+    font-family: 'Syne', sans-serif; font-size: 12px; letter-spacing: 3px;
+    text-transform: uppercase; border: none; border-radius: 10px; padding: 14px;
+    cursor: pointer; width: 100%; position: relative; overflow: hidden;
+    transition: transform .15s, box-shadow .2s;
+    box-shadow: 0 0 30px rgba(59,130,246,0.18);
+  }
+  .login-btn::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.18) 0%, transparent 55%);
+    pointer-events: none;
+  }
+  .login-btn:hover { transform: translateY(-1px); box-shadow: 0 0 44px rgba(59,130,246,0.3); }
+  .login-btn:active { transform: translateY(0px); }
+  .login-error {
+    font-size: 11px; color: #f87171; text-align: center;
+    font-family: 'JetBrains Mono', monospace; min-height: 14px; letter-spacing: 1px;
+  }
+  .login-footer {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    color: rgba(255,255,255,0.1); text-align: center; letter-spacing: 1px;
+    animation: lFadeUp .6s .2s cubic-bezier(.16,1,.3,1) both;
+  }
+  @keyframes lFadeDown { from{opacity:0;transform:translateY(-14px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes lFadeUp   { from{opacity:0;transform:translateY(14px)}  to{opacity:1;transform:translateY(0)} }
+  #login-overlay.exit { animation: lExit .45s cubic-bezier(.4,0,1,1) forwards; }
+  @keyframes lExit { 0%{opacity:1;transform:scale(1)} 100%{opacity:0;transform:scale(1.03)} }
 </style>
 </head>
 <body>
+
+<!-- ══ PANTALLA DE ACCESO ══ -->
+<div id="login-overlay">
+  <div class="login-wrap">
+    <div class="login-head">
+      <div class="login-eyebrow">acceso restringido</div>
+      <div class="login-title">ABALAR <span>EXPLOITS</span></div>
+      <div class="login-tagline">// SISTEMA DE GUÍAS TÉCNICAS</div>
+    </div>
+    <div class="login-box">
+      <div class="login-status-row">
+        <div class="login-status-dot"></div>
+        AUTENTICACIÓN REQUERIDA
+      </div>
+      <div class="login-field">
+        <label>Clave de acceso</label>
+        <div class="login-input-wrap">
+          <svg class="login-input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <input id="login-input" class="login-input" type="password" placeholder="••••••" autocomplete="off" onkeydown="if(event.key==='Enter')checkLogin()">
+        </div>
+      </div>
+      <div class="login-error" id="login-error"></div>
+      <button class="login-btn" onclick="checkLogin()">ACCEDER AL SISTEMA</button>
+    </div>
+    <div class="login-footer"></div>
+  </div>
+</div>
 
 <!-- SIDEBAR -->
 <nav id="sidebar">
@@ -708,7 +865,7 @@ sudo apt-get remove --purge -y ctparental*</pre>
       <div class="guide-block abalar" id="block-actualizaciones">
         <div class="guide-block-header" onclick="toggleBlock(this)">
           <div class="guide-block-num abalar">03</div>
-          <div class="guide-block-title">Quitar Actualizaciones Automáticas</div>
+          <div class="guide-block-title">Quitar las actualizaciones automáticas</div>
           <svg class="guide-block-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
         </div>
         <div class="guide-block-body">
@@ -892,7 +1049,7 @@ sync</pre>
         <div class="status-item" data-status="active" data-section="abalar">
           <div class="status-dot"></div>
           <div class="status-info">
-            <div class="status-name">Quitar Actualizaciones Automáticas</div>
+            <div class="status-name">Quitar las actualizaciones automáticas</div>
             <div class="status-section-tag">// Abalar</div>
           </div>
           <div class="status-badge"></div>
@@ -1083,6 +1240,38 @@ sync</pre>
   function closeSidebar() {
     document.getElementById('sidebar').classList.remove('open');
     document.getElementById('overlay').classList.remove('open');
+  }
+
+  // ═══ LOGIN ═══
+  (function() {
+    var H = '156e517d2fd7630edd19142a8fb427f945f2d10cd70f96d4d71cf35521448cd1';
+    var K = 'ae7f3c';
+    if (localStorage.getItem(K) === '1') {
+      document.getElementById('login-overlay').classList.add('hidden');
+      return;
+    }
+    document.getElementById('login-overlay').classList.remove('hidden');
+  })();
+
+  async function checkLogin() {
+    var K = 'ae7f3c';
+    var H = '156e517d2fd7630edd19142a8fb427f945f2d10cd70f96d4d71cf35521448cd1';
+    var val = document.getElementById('login-input').value;
+    var buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(val));
+    var hash = Array.from(new Uint8Array(buf)).map(function(b){ return b.toString(16).padStart(2,'0'); }).join('');
+    if (hash === H) {
+      localStorage.setItem(K, '1');
+      var ov = document.getElementById('login-overlay');
+      ov.classList.add('exit');
+      setTimeout(function(){ ov.classList.add('hidden'); }, 450);
+    } else {
+      var inp = document.getElementById('login-input');
+      var err = document.getElementById('login-error');
+      err.textContent = 'Contraseña incorrecta';
+      inp.classList.add('error');
+      inp.value = '';
+      setTimeout(function(){ inp.classList.remove('error'); err.textContent=''; }, 1500);
+    }
   }
 
   buildSidebar();
