@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ABALAR EXPLOITS — Mantenimiento</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #04080f;
+    color: #c8d6e8;
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 24px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .bg-grid {
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(37,99,235,0.07) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(37,99,235,0.07) 1px, transparent 1px);
+    background-size: 44px 44px;
+    z-index: 0;
+  }
+
+  .wrap {
+    position: relative;
+    z-index: 1;
+    max-width: 580px;
+    width: 100%;
+  }
+
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-size: 72px;
+    font-weight: 800;
+    line-height: 0.9;
+    letter-spacing: -3px;
+    margin-bottom: 48px;
+  }
+  .logo .a { color: #ffffff; display: block; }
+  .logo .e { color: #2563eb; display: block; }
+
+  .code-line {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #ef4444;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+  .code-line::before {
+    content: '';
+    display: inline-block;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #ef4444;
+    animation: blink 1.4s ease-in-out infinite;
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+
+  .big {
+    font-family: 'Syne', sans-serif;
+    font-size: 56px;
+    font-weight: 800;
+    letter-spacing: -2px;
+    line-height: 1;
+    color: #fff;
+    margin-bottom: 32px;
+  }
+  .big .num { color: #ef4444; }
+  .big .slash { color: #1e3a5f; }
+
+  .msg {
+    font-size: 16px;
+    font-weight: 300;
+    color: #7a95b4;
+    line-height: 1.8;
+    margin-bottom: 40px;
+  }
+
+  .volvemos {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #2563eb;
+    border: 1px solid #1e3a5f;
+    display: inline-block;
+    padding: 10px 28px;
+    border-radius: 4px;
+  }
+
+  .foot {
+    margin-top: 56px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #1e3a5f;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="wrap">
+
+  <div class="logo">
+    <span class="a">ABALAR</span>
+    <span class="e">EXPLOITS</span>
+  </div>
+
+  <div class="code-line">Mantenimiento | Error 503</div>
+
+  <div class="big">
+    <span class="num">503</span><span class="slash"> /</span><br>FUERA DE<br>SERVICIO
+  </div>
+
+  <p class="msg">
+    La Xunta de Galicia ha detectado y reportado esta web.<br>
+    El sitio está temporalmente suspendido mientras gestionamos la situación.
+  </p>
+
+  <div class="volvemos">Volveremos pronto</div>
+
+  <div class="foot">abalar exploits — guías técnicas</div>
+
+</div>
+</body>
+</html>
