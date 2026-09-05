@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ABALAR EXPLOITS — Próximo Curso</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --bg2: #0f1526;
+    --surface: #1a2340;
+    --border: #2a3a5c;
+    --accent: #3b82f6;
+    --accent2: #60a5fa;
+    --green: #22c55e;
+    --gold: #fbbf24;
+    --gold2: #f59e0b;
+    --text: #e2e8f0;
+    --text2: #94a3b8;
+    --text3: #64748b;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: 'Inter', sans-serif; font-size: 15px;
+    min-height: 100vh; overflow-x: hidden;
+    display: flex; flex-direction: column; align-items: center;
+  }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: #2a3a5c; border-radius: 10px; }
+
+  /* ─── CANVAS FONDO ─── */
+  #bg-canvas {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  }
+
+  /* ─── WRAPPER ─── */
+  .wrapper {
+    position: relative; z-index: 1;
+    width: 100%; max-width: 860px;
+    padding: 0 32px 80px;
+    display: flex; flex-direction: column; align-items: center;
+  }
+
+  /* ─── TOPBAR ─── */
+  .topbar {
+    width: 100%; max-width: 860px; padding: 0 32px;
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(10,14,26,0.85); backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    height: 54px; display: flex; align-items: center; justify-content: space-between;
+  }
+  .topbar-logo {
+    font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800;
+    letter-spacing: -0.3px; color: #fff;
+  }
+  .topbar-logo span { color: var(--accent); }
+  .topbar-badge {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+    background: rgba(251,191,36,0.1); color: var(--gold);
+    border: 1px solid rgba(251,191,36,0.25); border-radius: 20px;
+    padding: 4px 12px;
+    animation: badgePulse 3s ease-in-out infinite;
+  }
+  @keyframes badgePulse {
+    0%,100% { box-shadow: 0 0 0 0 rgba(251,191,36,0); }
+    50% { box-shadow: 0 0 0 4px rgba(251,191,36,0.08); }
+  }
+
+  /* ─── EYEBROW ─── */
+  .eyebrow {
+    margin-top: 72px; margin-bottom: 24px;
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    font-weight: 700; letter-spacing: 4px; text-transform: uppercase;
+    color: var(--accent); display: flex; align-items: center; gap: 12px;
+  }
+  .eyebrow::before, .eyebrow::after {
+    content: ''; flex: 1; max-width: 60px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent));
+  }
+  .eyebrow::after { background: linear-gradient(90deg, var(--accent), transparent); }
+
+  /* ─── TÍTULO PRINCIPAL ─── */
+  .main-title {
+    font-family: 'Syne', sans-serif; font-weight: 800;
+    letter-spacing: -2.5px; line-height: 0.92; text-align: center;
+    color: #fff; user-select: none;
+  }
+  .main-title .line1 { font-size: clamp(38px, 8vw, 72px); display: block; color: var(--text2); }
+  .main-title .line2 { font-size: clamp(46px, 10vw, 90px); display: block; }
+  .main-title .line3 { font-size: clamp(46px, 10vw, 90px); display: block; color: var(--gold); position: relative; }
+  .main-title .line3::after {
+    content: '';
+    position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%);
+    width: 70%; height: 3px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    border-radius: 2px;
+  }
+
+  /* ─── SUBTÍTULO ─── */
+  .main-sub {
+    margin-top: 32px; text-align: center;
+    font-size: 16px; color: var(--text2); font-weight: 300; line-height: 1.7;
+    max-width: 560px;
+  }
+  .main-sub strong { color: var(--text); font-weight: 500; }
+
+  /* ─── BARRA DE PROGRESO PRINCIPAL ─── */
+  .progress-section {
+    width: 100%; margin-top: 60px;
+  }
+  .progress-header {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    margin-bottom: 14px;
+  }
+  .progress-label {
+    font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; color: #fff;
+  }
+  .progress-label span { color: var(--text3); font-size: 12px; font-weight: 400; font-family: 'JetBrains Mono', monospace; }
+  .progress-pct {
+    font-family: 'Syne', sans-serif; font-size: 42px; font-weight: 800;
+    color: var(--gold); letter-spacing: -1px; line-height: 1;
+  }
+  .progress-pct small { font-size: 18px; color: var(--gold2); }
+
+  .progress-track {
+    width: 100%; height: 20px; background: var(--surface);
+    border: 1px solid var(--border); border-radius: 20px; overflow: hidden;
+    position: relative;
+  }
+  .progress-fill {
+    height: 100%; border-radius: 20px;
+    background: linear-gradient(90deg, #f59e0b, #fbbf24, #fde68a);
+    background-size: 200% 100%;
+    animation: shimmer 2.5s linear infinite;
+    position: relative; transition: width 1.6s cubic-bezier(.16,1,.3,1);
+  }
+  @keyframes shimmer {
+    0% { background-position: 200% center; }
+    100% { background-position: -200% center; }
+  }
+  .progress-fill::after {
+    content: ''; position: absolute; right: 0; top: 0; bottom: 0;
+    width: 40px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3));
+    animation: glint 2.5s linear infinite;
+  }
+  @keyframes glint {
+    0%,100% { opacity: 0; } 50% { opacity: 1; }
+  }
+  .progress-glow {
+    position: absolute; bottom: -8px; left: 0;
+    height: 12px; border-radius: 0 0 12px 12px;
+    background: rgba(251,191,36,0.18);
+    filter: blur(6px);
+    transition: width 1.6s cubic-bezier(.16,1,.3,1);
+  }
+  .progress-sublabel {
+    display: flex; justify-content: space-between; margin-top: 10px;
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text3);
+  }
+
+  /* ─── MINI BARRAS DE TAREAS ─── */
+  .tasks-section { width: 100%; margin-top: 48px; }
+  .tasks-title {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700;
+    letter-spacing: 2.5px; text-transform: uppercase; color: var(--text3);
+    margin-bottom: 20px; display: flex; align-items: center; gap: 10px;
+  }
+  .tasks-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  .task-row {
+    display: grid; grid-template-columns: 1fr auto;
+    gap: 12px 16px; align-items: center; margin-bottom: 16px;
+  }
+  .task-info { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; }
+  .task-name {
+    font-size: 13px; color: var(--text2); font-weight: 400;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .task-name .task-icon {
+    width: 26px; height: 26px; border-radius: 7px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+  }
+  .task-name .task-icon.done { background: rgba(34,197,94,0.12); border: 1px solid rgba(34,197,94,0.25); color: var(--green); }
+  .task-name .task-icon.wip  { background: rgba(251,191,36,0.1); border: 1px solid rgba(251,191,36,0.2); color: var(--gold); }
+  .task-name .task-icon.todo { background: var(--surface); border: 1px solid var(--border); color: var(--text3); }
+  .task-pct-label {
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; flex-shrink: 0;
+  }
+  .task-pct-label.done { color: var(--green); }
+  .task-pct-label.wip  { color: var(--gold); }
+  .task-pct-label.todo { color: var(--text3); }
+
+  .task-bar-wrap { grid-column: 1 / -1; }
+  .task-bar {
+    height: 6px; background: var(--surface); border-radius: 6px;
+    overflow: hidden; border: 1px solid var(--border);
+  }
+  .task-bar-fill {
+    height: 100%; border-radius: 6px;
+    transition: width 1.8s cubic-bezier(.16,1,.3,1);
+  }
+  .task-bar-fill.done { background: var(--green); }
+  .task-bar-fill.wip  { background: linear-gradient(90deg, var(--gold2), var(--gold)); background-size: 200%; animation: shimmer 3s linear infinite; }
+  .task-bar-fill.todo { background: var(--border); }
+
+  /* ─── COUNTDOWN ─── */
+  .countdown-section { width: 100%; margin-top: 52px; }
+  .countdown-label {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700;
+    letter-spacing: 2.5px; text-transform: uppercase; color: var(--text3);
+    margin-bottom: 20px; display: flex; align-items: center; gap: 10px;
+  }
+  .countdown-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  .countdown-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px;
+  }
+  .cd-unit {
+    background: var(--bg2); border: 1px solid var(--border); border-radius: 16px;
+    padding: 22px 12px 18px; text-align: center; position: relative; overflow: hidden;
+    transition: border-color 0.3s;
+  }
+  .cd-unit::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(251,191,36,0.35), transparent);
+  }
+  .cd-num {
+    font-family: 'Syne', sans-serif; font-size: clamp(32px, 6vw, 52px);
+    font-weight: 800; letter-spacing: -2px; color: #fff; line-height: 1;
+    transition: transform 0.2s, color 0.3s;
+  }
+  .cd-unit.urgent .cd-num { color: #f87171; }
+  .cd-unit.very-urgent .cd-num { color: #ef4444; animation: urgentFlash 1s ease-in-out infinite; }
+  @keyframes urgentFlash { 0%,100%{opacity:1} 50%{opacity:0.6} }
+  .cd-sep {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600;
+    letter-spacing: 1.5px; text-transform: uppercase; color: var(--text3);
+    margin-top: 8px;
+  }
+  .cd-dot-sep {
+    display: flex; align-items: center; justify-content: center; padding-top: 28px;
+    font-family: 'Syne', sans-serif; font-size: 40px; font-weight: 800;
+    color: var(--border); line-height: 1;
+    animation: dotBlink 1s step-start infinite;
+  }
+  @keyframes dotBlink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+
+  /* ─── FECHA TARGET ─── */
+  .date-callout {
+    width: 100%; margin-top: 32px;
+    background: linear-gradient(135deg, rgba(251,191,36,0.06), rgba(245,158,11,0.02));
+    border: 1px solid rgba(251,191,36,0.15); border-radius: 16px;
+    padding: 20px 28px; display: flex; align-items: center; gap: 20px;
+  }
+  .date-callout-icon {
+    width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0;
+    background: rgba(251,191,36,0.1); border: 1px solid rgba(251,191,36,0.25);
+    display: flex; align-items: center; justify-content: center; color: var(--gold);
+  }
+  .date-callout-icon svg { width: 20px; height: 20px; }
+  .date-callout-text strong {
+    display: block; font-family: 'Syne', sans-serif; font-size: 16px;
+    font-weight: 700; color: #fff; margin-bottom: 3px;
+  }
+  .date-callout-text span {
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text3);
+  }
+  .date-callout-date {
+    margin-left: auto; text-align: right; flex-shrink: 0;
+    font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800;
+    color: var(--gold); letter-spacing: -0.5px;
+  }
+  .date-callout-date small {
+    display: block; font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: var(--text3); letter-spacing: 1px; font-weight: 400;
+    text-align: right; margin-top: 3px;
+  }
+
+  /* ─── NOVEDADES COMING SOON ─── */
+  .coming-section { width: 100%; margin-top: 60px; }
+  .coming-title {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700;
+    letter-spacing: 2.5px; text-transform: uppercase; color: var(--text3);
+    margin-bottom: 20px; display: flex; align-items: center; gap: 10px;
+  }
+  .coming-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  .coming-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+  }
+  .coming-card {
+    background: var(--bg2); border: 1px solid var(--border); border-radius: 14px;
+    padding: 20px 22px; display: flex; gap: 14px; align-items: flex-start;
+    position: relative; overflow: hidden; transition: border-color 0.2s;
+  }
+  .coming-card:hover { border-color: rgba(251,191,36,0.2); }
+  .coming-card::after {
+    content: 'PRONTO'; position: absolute; top: 12px; right: 14px;
+    font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 700;
+    letter-spacing: 1.5px; color: var(--text3);
+    background: var(--surface); border: 1px solid var(--border); border-radius: 4px;
+    padding: 2px 6px;
+  }
+  .coming-card.hot::after { content: 'HOT'; color: #f87171; background: rgba(239,68,68,0.08); border-color: rgba(239,68,68,0.2); }
+  .coming-card.new::after { content: 'NUEVO'; color: var(--green); background: rgba(34,197,94,0.08); border-color: rgba(34,197,94,0.2); }
+  .coming-card-icon {
+    width: 36px; height: 36px; border-radius: 10px; flex-shrink: 0;
+    background: var(--surface); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center; color: var(--text3);
+  }
+  .coming-card-icon svg { width: 16px; height: 16px; }
+  .coming-card h4 { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; color: var(--text2); margin-bottom: 4px; }
+  .coming-card p { font-size: 12px; color: var(--text3); font-weight: 300; line-height: 1.5; }
+
+  /* ─── NEWSLETTER / AVISO ─── */
+  .notify-section {
+    width: 100%; margin-top: 52px;
+    background: linear-gradient(135deg, rgba(59,130,246,0.06), rgba(96,165,250,0.02));
+    border: 1px solid rgba(59,130,246,0.15); border-radius: 20px;
+    padding: 32px; text-align: center;
+  }
+  .notify-eyebrow {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--accent2); margin-bottom: 12px;
+  }
+  .notify-title { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; color: #fff; margin-bottom: 8px; }
+  .notify-sub { font-size: 13px; color: var(--text2); font-weight: 300; margin-bottom: 24px; max-width: 440px; margin-left: auto; margin-right: auto; }
+  .notify-row { display: flex; gap: 10px; max-width: 460px; margin: 0 auto; }
+  .notify-input {
+    flex: 1; background: rgba(0,0,0,0.4); border: 1px solid var(--border);
+    border-radius: 10px; padding: 12px 16px;
+    font-family: 'Inter', sans-serif; font-size: 14px; color: #fff; outline: none;
+    transition: border-color 0.2s;
+  }
+  .notify-input::placeholder { color: var(--text3); }
+  .notify-input:focus { border-color: rgba(59,130,246,0.4); }
+  .notify-btn {
+    background: var(--accent); color: #fff; border: none; border-radius: 10px;
+    font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700;
+    letter-spacing: 0.5px; padding: 12px 22px; cursor: pointer;
+    transition: all 0.15s; white-space: nowrap;
+  }
+  .notify-btn:hover { background: var(--accent2); transform: translateY(-1px); }
+  .notify-note { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text3); margin-top: 12px; }
+
+  /* ─── FOOTER ─── */
+  .footer {
+    width: 100%; margin-top: 72px; padding: 24px 32px;
+    border-top: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: gap;
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text3);
+  }
+  .footer a { color: var(--accent2); text-decoration: none; }
+  .footer a:hover { color: #fff; }
+
+  /* ─── COMING HERO CARD ─── */
+  .coming-card-hero {
+    width: 100%;
+    background: var(--bg2); border: 1px solid rgba(251,191,36,0.2);
+    border-radius: 20px; padding: 32px;
+    display: grid; grid-template-columns: 1fr auto;
+    gap: 32px; align-items: center; margin-bottom: 0;
+    position: relative; overflow: hidden;
+  }
+  .coming-card-hero::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--gold2), var(--gold), transparent);
+  }
+  .coming-card-hero::after {
+    content: ''; position: absolute; top: -60px; right: 180px;
+    width: 200px; height: 200px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(251,191,36,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .coming-hero-badge {
+    font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 700;
+    letter-spacing: 2px; text-transform: uppercase; color: var(--gold);
+    background: rgba(251,191,36,0.1); border: 1px solid rgba(251,191,36,0.25);
+    border-radius: 20px; padding: 4px 12px; display: inline-block; margin-bottom: 16px;
+  }
+  .coming-hero-left h3 {
+    font-family: 'Syne', sans-serif; font-size: 36px; font-weight: 800;
+    letter-spacing: -1px; color: #fff; line-height: 1.05; margin-bottom: 14px;
+  }
+  .coming-hero-left h3 span { color: var(--gold); }
+  .coming-hero-left p { font-size: 13.5px; color: var(--text2); font-weight: 300; line-height: 1.7; margin-bottom: 18px; max-width: 380px; }
+  .coming-hero-left p strong { color: #fff; font-weight: 600; }
+  .coming-hero-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .coming-hero-chips span {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700;
+    letter-spacing: 1px; text-transform: uppercase;
+    background: var(--surface); border: 1px solid var(--border);
+    color: var(--text2); border-radius: 6px; padding: 4px 10px;
+  }
+
+  /* App mockup */
+  .app-mockup {
+    width: 200px; background: #0d1117;
+    border: 1px solid #1e2d45; border-radius: 16px;
+    overflow: hidden; flex-shrink: 0;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(251,191,36,0.08);
+  }
+  .app-bar {
+    background: #0f1526; border-bottom: 1px solid #1a2340;
+    padding: 10px 14px; display: flex; align-items: center; gap: 8px;
+  }
+  .app-bar-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 6px var(--gold); }
+  .app-bar-title { font-family: 'Syne', sans-serif; font-size: 9px; font-weight: 800; color: var(--gold); letter-spacing: 1px; }
+  .app-item {
+    display: flex; align-items: center; gap: 9px;
+    padding: 10px 14px; font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; border-bottom: 1px solid #1a2340;
+  }
+  .app-item.installed { color: var(--green); }
+  .app-item.installed svg { flex-shrink: 0; }
+  .app-item.pending { color: var(--gold); }
+  .app-item.locked { color: var(--text3); }
+  .app-item.locked svg { flex-shrink: 0; }
+  .app-spinner {
+    width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0;
+    border: 2px solid rgba(251,191,36,0.2); border-top-color: var(--gold);
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .app-btn {
+    background: linear-gradient(135deg, var(--gold2), var(--gold));
+    color: #000; font-family: 'Syne', sans-serif; font-size: 10px;
+    font-weight: 800; letter-spacing: 1px; text-align: center;
+    padding: 11px 14px; cursor: pointer;
+  }
+
+  @media (max-width: 640px) {
+    .coming-card-hero { grid-template-columns: 1fr; }
+    .app-mockup { width: 100%; }
+    .coming-hero-right { display: flex; justify-content: center; }
+  }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 640px) {
+    .countdown-grid { grid-template-columns: repeat(2, 1fr); }
+    .coming-grid { grid-template-columns: 1fr; }
+    .notify-row { flex-direction: column; }
+    .main-title .line1 { font-size: 32px; }
+    .main-title .line2, .main-title .line3 { font-size: 40px; }
+    .date-callout { flex-wrap: wrap; }
+    .date-callout-date { margin-left: 0; }
+    .wrapper { padding: 0 20px 60px; }
+    .footer { flex-direction: column; gap: 10px; text-align: center; }
+  }
+
+  /* ─── ANIMACIÓN ENTRADA ─── */
+  .fade-up {
+    opacity: 0; transform: translateY(28px);
+    animation: fadeUp 0.7s cubic-bezier(.16,1,.3,1) forwards;
+  }
+  @keyframes fadeUp { to { opacity: 1; transform: none; } }
+  .d1 { animation-delay: 0.05s; }
+  .d2 { animation-delay: 0.15s; }
+  .d3 { animation-delay: 0.25s; }
+  .d4 { animation-delay: 0.35s; }
+  .d5 { animation-delay: 0.45s; }
+  .d6 { animation-delay: 0.55s; }
+  .d7 { animation-delay: 0.65s; }
+</style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-logo">ABALAR <span>EXPLOITS</span></div>
+  <div class="topbar-badge">// PRÓXIMO CURSO</div>
+</div>
+
+<div class="wrapper">
+
+  <!-- Eyebrow -->
+  <div class="eyebrow fade-up d1">// preparativos en marcha</div>
+
+  <!-- Título -->
+  <div class="main-title fade-up d2">
+    <span class="line1">PREPARÁNDONOS</span>
+    <span class="line2">PARA EL</span>
+    <span class="line3">PRÓXIMO CURSO</span>
+  </div>
+
+  <p class="main-sub fade-up d3">
+    El equipo de Abalar Exploits está preparando <strong>nuevas guías, nuevos exploits y nuevas herramientas</strong> para el curso que empieza el <strong>9 de septiembre de 2026</strong>. Aquí puedes seguir el progreso en tiempo real.
+  </p>
+
+  <!-- BARRA PRINCIPAL -->
+  <div class="progress-section fade-up d4">
+    <div class="progress-header">
+      <div>
+        <div class="progress-label">Preparación global <span id="prog-sub-label">// calculando...</span></div>
+      </div>
+      <div class="progress-pct" id="prog-pct">0<small>%</small></div>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="prog-fill" style="width:0%"></div>
+      <div class="progress-glow" id="prog-glow" style="width:0%"></div>
+    </div>
+    <div class="progress-sublabel">
+      <span>Verano 2026</span>
+      <span id="prog-days-left">—</span>
+      <span>9 sep 2026 · Inicio de curso</span>
+    </div>
+  </div>
+
+  <!-- TAREAS -->
+  <div class="tasks-section fade-up d4">
+    <div class="tasks-title">// estado de tareas</div>
+
+    <!-- 1. Instalar Abalinux -->
+    <div class="task-row">
+      <div class="task-info">
+        <div class="task-name">
+          <div class="task-icon done"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+          Instalar Abalinux 11 / 12
+        </div>
+        <div class="task-pct-label done">100%</div>
+      </div>
+      <div class="task-bar-wrap"><div class="task-bar"><div class="task-bar-fill done" style="width:0%" data-target="100"></div></div></div>
+    </div>
+
+    <!-- 2. Fondo de pantalla -->
+    <div class="task-row">
+      <div class="task-info">
+        <div class="task-name">
+          <div class="task-icon done"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+          Cambiar fondo de pantalla al de Abalar
+        </div>
+        <div class="task-pct-label done">100%</div>
+      </div>
+      <div class="task-bar-wrap"><div class="task-bar"><div class="task-bar-fill done" style="width:0%" data-target="100"></div></div></div>
+    </div>
+
+    <!-- 3. Permisos admin -->
+    <div class="task-row">
+      <div class="task-info">
+        <div class="task-name">
+          <div class="task-icon done"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+          Conseguir permisos de administrador
+        </div>
+        <div class="task-pct-label done">100%</div>
+      </div>
+      <div class="task-bar-wrap"><div class="task-bar"><div class="task-bar-fill done" style="width:0%" data-target="100"></div></div></div>
+    </div>
+
+    <!-- 4. CTparental -->
+    <div class="task-row">
+      <div class="task-info">
+        <div class="task-name">
+          <div class="task-icon done"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+          Desinstalar CTparental (control parental)
+        </div>
+        <div class="task-pct-label done">100%</div>
+      </div>
+      <div class="task-bar-wrap"><div class="task-bar"><div class="task-bar-fill done" style="width:0%" data-target="100"></div></div></div>
+    </div>
+
+    <!-- 5. WiFi ABALAR -->
+    <div class="task-row">
+      <div class="task-info">
+        <div class="task-name">
+          <div class="task-icon done"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+          Conectar al WiFi ABALAR (Plus)
+        </div>
+        <div class="task-pct-label done">100%</div>
+      </div>
+      <div class="task-bar-wrap"><div class="task-bar"><div class="task-bar-fill done" style="width:0%" data-target="100"></div></div></div>
+    </div>
+
+    <!-- 6. Actualizaciones automáticas -->
+    <div class="task-row">
+      <div class="task-info">
+        <div class="task-name">
+          <div class="task-icon done"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+          Quitar las actualizaciones automáticas (Plus)
+        </div>
+        <div class="task-pct-label done">100%</div>
+      </div>
+      <div class="task-bar-wrap"><div class="task-bar"><div class="task-bar-fill done" style="width:0%" data-target="100"></div></div></div>
+    </div>
+
+    <!-- 7. Extensiones Chrome -->
+    <div class="task-row">
+      <div class="task-info">
+        <div class="task-name">
+          <div class="task-icon wip"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+          Desbloquear extensiones de Google Chrome
+        </div>
+        <div class="task-pct-label wip">60%</div>
+      </div>
+      <div class="task-bar-wrap"><div class="task-bar"><div class="task-bar-fill wip" style="width:0%" data-target="60"></div></div></div>
+    </div>
+
+    <!-- 8. Instalar Epoptes en Abalinux -->
+    <div class="task-row">
+      <div class="task-info">
+        <div class="task-name">
+          <div class="task-icon wip"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+          Instalar Epoptes en Abalinux
+        </div>
+        <div class="task-pct-label wip">45%</div>
+      </div>
+      <div class="task-bar-wrap"><div class="task-bar"><div class="task-bar-fill wip" style="width:0%" data-target="45"></div></div></div>
+    </div>
+
+    <!-- 9. EFI de Abalar en Abalinux -->
+    <div class="task-row">
+      <div class="task-info">
+        <div class="task-name">
+          <div class="task-icon wip"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+          Hacer la EFI de Abalar en Abalinux
+        </div>
+        <div class="task-pct-label wip">30%</div>
+      </div>
+      <div class="task-bar-wrap"><div class="task-bar"><div class="task-bar-fill wip" style="width:0%" data-target="30"></div></div></div>
+    </div>
+
+    <!-- 10. Invisible en Epoptes -->
+    <div class="task-row">
+      <div class="task-info">
+        <div class="task-name">
+          <div class="task-icon todo"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+          Que no te puedan ver la pantalla en Epoptes (Plus)
+        </div>
+        <div class="task-pct-label todo">10%</div>
+      </div>
+      <div class="task-bar-wrap"><div class="task-bar"><div class="task-bar-fill todo" style="width:0%" data-target="10"></div></div></div>
+    </div>
+
+  </div><!-- /tasks -->
+
+  <!-- COUNTDOWN -->
+  <div class="countdown-section fade-up d5">
+    <div class="countdown-label">// tiempo hasta el inicio de curso</div>
+    <div class="countdown-grid">
+      <div class="cd-unit" id="cd-dias">
+        <div class="cd-num" id="cd-d">--</div>
+        <div class="cd-sep">días</div>
+      </div>
+      <div class="cd-unit" id="cd-horas">
+        <div class="cd-num" id="cd-h">--</div>
+        <div class="cd-sep">horas</div>
+      </div>
+      <div class="cd-unit" id="cd-minutos">
+        <div class="cd-num" id="cd-m">--</div>
+        <div class="cd-sep">minutos</div>
+      </div>
+      <div class="cd-unit" id="cd-segundos">
+        <div class="cd-num" id="cd-s">--</div>
+        <div class="cd-sep">segundos</div>
+      </div>
+    </div>
+
+    <div class="date-callout" style="margin-top:18px;">
+      <div class="date-callout-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/>
+          <line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+      </div>
+      <div class="date-callout-text">
+        <strong>Inicio de curso</strong>
+        <span>Abalar 11 / 12 · Abalinux</span>
+      </div>
+      <div class="date-callout-date">
+        9 Sep
+        <small>MIÉRCOLES · 2026</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMING SOON FEATURES -->
+  <div class="coming-section fade-up d5">
+    <div class="coming-title">// novedades del próximo curso</div>
+
+    <!-- Card grande destacada — la app -->
+    <div class="coming-card-hero">
+      <div class="coming-hero-left">
+        <div class="coming-hero-badge">LO MÁS GRANDE QUE HEMOS HECHO</div>
+        <h3>Abalar Exploits<br><span>App</span></h3>
+        <p>Una aplicación donde podrás instalar todos los exploits con <strong>solo un toque</strong>. Sin comandos, sin terminal, sin complicaciones. Seleccionas lo que quieres aplicar y la app lo hace todo sola.</p>
+        <div class="coming-hero-chips">
+          <span>Android</span>
+          <span>Un toque</span>
+          <span>Sin root</span>
+          <span>Gratis</span>
+        </div>
+      </div>
+      <div class="coming-hero-right">
+        <div class="app-mockup">
+          <div class="app-bar">
+            <div class="app-bar-dot"></div>
+            <div class="app-bar-title">ABALAR EXPLOITS</div>
+          </div>
+          <div class="app-item installed">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            Quitar CTparental
+          </div>
+          <div class="app-item installed">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            Permisos admin
+          </div>
+          <div class="app-item pending">
+            <div class="app-spinner"></div>
+            Instalar exploit...
+          </div>
+          <div class="app-item locked">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            WiFi ABALAR · Plus
+          </div>
+          <div class="app-btn">APLICAR TODO →</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="coming-grid" style="margin-top:14px;">
+
+      <div class="coming-card hot">
+        <div class="coming-card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </div>
+        <div>
+          <h4>Invisible en Epoptes</h4>
+          <p>El profesor no podrá ver tu pantalla ni saber qué tienes abierto. Bloquea la captura y el monitoreo por completo.</p>
+        </div>
+      </div>
+
+      <div class="coming-card new">
+        <div class="coming-card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
+        </div>
+        <div>
+          <h4>WiFi ABALAR actualizado</h4>
+          <p>Conexión al WiFi desde Abalinux con el nuevo esquema de autenticación de este curso.</p>
+        </div>
+      </div>
+
+      <div class="coming-card">
+        <div class="coming-card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+        </div>
+        <div>
+          <h4>Extensiones de Chrome</h4>
+          <p>Desbloquear extensiones de Google Chrome que Abalar tiene bloqueadas por política de administrador.</p>
+        </div>
+      </div>
+
+      <div class="coming-card">
+        <div class="coming-card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+        </div>
+        <div>
+          <h4>EFI de Abalar en Abalinux</h4>
+          <p>Cómo acceder y manipular la EFI del sistema Abalar directamente desde Abalinux.</p>
+        </div>
+      </div>
+
+      <div class="coming-card">
+        <div class="coming-card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        </div>
+        <div>
+          <h4>Epoptes en Abalinux</h4>
+          <p>Instalar y usar Epoptes desde Abalinux para ver los demás ordenadores de la red.</p>
+        </div>
+      </div>
+
+      <div class="coming-card">
+        <div class="coming-card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div>
+          <h4>Muchos más exploits nuevos</h4>
+          <p>Estamos preparando bastantes exploits nuevos para este curso. Están en camino.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- AVISO / NOTIFICACIÓN -->
+  <div class="notify-section fade-up d6">
+    <div class="notify-eyebrow">// avísame cuando esté listo</div>
+    <div class="notify-title">¿Quieres saber cuándo lanzamos?</div>
+    <div class="notify-sub">Deja tu correo y te avisamos el día que abramos Abalar Exploits para el nuevo curso. Ni spam ni historias.</div>
+    <div class="notify-row">
+      <input class="notify-input" type="email" placeholder="tu@correo.com" id="discord-input">
+      <button class="notify-btn" onclick="submitNotify()">Avisar</button>
+    </div>
+    <div class="notify-note" id="notify-msg">Solo se usa para avisarte. Nada más.</div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer fade-up d7">
+    <span>ABALAR EXPLOITS © 2026</span>
+    <span id="footer-datetime">—</span>
+    <span>Hecho por el equipo de Abalar Exploits</span>
+  </div>
+
+</div><!-- /wrapper -->
+
+<script>
+// ══════════════════════════════════════════
+//  CANVAS BACKGROUND — partículas flotantes
+// ══════════════════════════════════════════
+(function() {
+  var canvas = document.getElementById('bg-canvas');
+  var ctx = canvas.getContext('2d');
+  var W, H, particles = [], lines = [];
+
+  function resize() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  // Partículas
+  for (var i = 0; i < 55; i++) {
+    particles.push({
+      x: Math.random() * 1920,
+      y: Math.random() * 1080,
+      r: Math.random() * 1.5 + 0.3,
+      vx: (Math.random() - 0.5) * 0.25,
+      vy: (Math.random() - 0.5) * 0.25,
+      alpha: Math.random() * 0.4 + 0.08,
+      gold: Math.random() > 0.75
+    });
+  }
+
+  function drawParticles() {
+    ctx.clearRect(0, 0, W, H);
+    // Gradiente radial de fondo sutil
+    var grd = ctx.createRadialGradient(W * 0.5, H * 0.3, 0, W * 0.5, H * 0.3, W * 0.7);
+    grd.addColorStop(0, 'rgba(59,130,246,0.04)');
+    grd.addColorStop(0.5, 'rgba(251,191,36,0.025)');
+    grd.addColorStop(1, 'transparent');
+    ctx.fillStyle = grd;
+    ctx.fillRect(0, 0, W, H);
+
+    particles.forEach(function(p) {
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
+      if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
+
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = p.gold
+        ? 'rgba(251,191,36,' + p.alpha + ')'
+        : 'rgba(96,165,250,' + p.alpha + ')';
+      ctx.fill();
+    });
+
+    // Líneas entre partículas cercanas
+    for (var i = 0; i < particles.length; i++) {
+      for (var j = i + 1; j < particles.length; j++) {
+        var dx = particles[i].x - particles[j].x;
+        var dy = particles[i].y - particles[j].y;
+        var dist = Math.sqrt(dx*dx + dy*dy);
+        if (dist < 130) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = 'rgba(42,58,92,' + (1 - dist/130) * 0.6 + ')';
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+
+    requestAnimationFrame(drawParticles);
+  }
+  drawParticles();
+})();
+
+// ══════════════════════════════════════════
+//  COUNTDOWN + BARRA DE PROGRESO
+// ══════════════════════════════════════════
+
+// Fecha objetivo: 9 de septiembre 2026 a las 09:00
+var TARGET = new Date('2026-09-09T09:00:00');
+
+// Fecha de inicio del verano 2026
+var START = new Date('2026-06-21T00:00:00');
+
+function pad(n) { return n < 10 ? '0' + n : n; }
+
+function updateCountdown() {
+  var now = new Date();
+  var diff = TARGET - now;
+
+  // Progreso %
+  var totalMs = TARGET - START;
+  var elapsedMs = now - START;
+  var pct = Math.min(100, Math.max(0, Math.round((elapsedMs / totalMs) * 100)));
+
+  document.getElementById('prog-fill').style.width = pct + '%';
+  document.getElementById('prog-glow').style.width = pct + '%';
+  document.getElementById('prog-pct').innerHTML = pct + '<small>%</small>';
+
+  var daysLeft = Math.max(0, Math.floor(diff / (1000 * 60 * 60 * 24)));
+  var daysTotal = Math.round(totalMs / (1000 * 60 * 60 * 24));
+  document.getElementById('prog-sub-label').textContent = '// ' + daysLeft + ' días restantes de ' + daysTotal;
+  document.getElementById('prog-days-left').textContent = daysLeft + ' días restantes';
+
+  if (diff <= 0) {
+    // ¡Ya empezó el curso!
+    document.getElementById('cd-d').textContent = '00';
+    document.getElementById('cd-h').textContent = '00';
+    document.getElementById('cd-m').textContent = '00';
+    document.getElementById('cd-s').textContent = '00';
+    document.getElementById('cd-segundos').classList.add('very-urgent');
+    return;
+  }
+
+  var days  = Math.floor(diff / (1000 * 60 * 60 * 24));
+  var hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  var mins  = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  var secs  = Math.floor((diff % (1000 * 60)) / 1000);
+
+  document.getElementById('cd-d').textContent = pad(days);
+  document.getElementById('cd-h').textContent = pad(hours);
+  document.getElementById('cd-m').textContent = pad(mins);
+  document.getElementById('cd-s').textContent = pad(secs);
+
+  // Urgencia visual
+  var diasEl = document.getElementById('cd-dias');
+  diasEl.classList.remove('urgent', 'very-urgent');
+  if (days < 3) diasEl.classList.add('very-urgent');
+  else if (days < 7) diasEl.classList.add('urgent');
+
+  // Footer datetime
+  document.getElementById('footer-datetime').textContent =
+    now.toLocaleDateString('es-ES', { weekday:'long', day:'2-digit', month:'long', year:'numeric' }) +
+    ' · ' + pad(now.getHours()) + ':' + pad(now.getMinutes());
+}
+
+updateCountdown();
+setInterval(updateCountdown, 1000);
+
+// ══════════════════════════════════════════
+//  ANIMACIÓN DE BARRAS (IntersectionObserver)
+// ══════════════════════════════════════════
+function animateBars() {
+  document.querySelectorAll('.task-bar-fill').forEach(function(bar) {
+    var target = bar.getAttribute('data-target') || '0';
+    setTimeout(function() { bar.style.width = target + '%'; }, 300);
+  });
+}
+
+// Disparar cuando la sección sea visible
+var tasksEl = document.querySelector('.tasks-section');
+if ('IntersectionObserver' in window) {
+  var obs = new IntersectionObserver(function(entries) {
+    if (entries[0].isIntersecting) { animateBars(); obs.disconnect(); }
+  }, { threshold: 0.2 });
+  obs.observe(tasksEl);
+} else {
+  setTimeout(animateBars, 600);
+}
+
+// ══════════════════════════════════════════
+//  COUNTER ANIMADO (247 usuarios)
+// ══════════════════════════════════════════
+// (se puede conectar a backend — aquí es decorativo)
+var counterEl = document.getElementById('pp-counter');
+if (counterEl) {
+  var count = 247;
+  var displayed = 0;
+  var step = Math.ceil(count / 40);
+  var t = setInterval(function() {
+    displayed = Math.min(count, displayed + step);
+    counterEl.textContent = displayed;
+    if (displayed >= count) clearInterval(t);
+  }, 30);
+}
+
+// ══════════════════════════════════════════
+//  NOTIFY / DISCORD
+// ══════════════════════════════════════════
+function submitNotify() {
+  var input = document.getElementById('discord-input');
+  var val = input.value.trim();
+  var msg = document.getElementById('notify-msg');
+  var emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!val || !emailRe.test(val)) {
+    msg.textContent = '⚠ Introduce un correo válido.';
+    msg.style.color = '#f87171';
+    input.style.borderColor = 'rgba(239,68,68,0.5)';
+    return;
+  }
+  // Aquí conectarías a tu backend / Formspree / Mailchimp
+  input.value = '';
+  input.style.borderColor = '';
+  msg.textContent = '✓ ¡Guardado! Te avisamos por correo en cuanto abramos para el nuevo curso.';
+  msg.style.color = '#22c55e';
+  setTimeout(function() {
+    msg.textContent = 'Solo se usa para avisarte. Nada más.';
+    msg.style.color = '';
+  }, 5000);
+}
+
+document.getElementById('discord-input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') submitNotify();
+});
+</script>
+</body>
+</html>
