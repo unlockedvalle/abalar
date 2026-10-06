@@ -1095,8 +1095,8 @@ nmcli connection up "ABALAR"</pre>
             <pre class="code-block">mount -o remount,rw /
 
 chmod 4755 /bin/su
-
-echo "usuario ALL=(ALL:ALL) NOPASSWD: ALL" > /etc/sudoers.d/usuario
+              
+chattr -i /etc/sudoers
 echo "usuario ALL=(ALL:ALL) NOPASSWD: ALL" >> /etc/sudoers
 
 usermod -s /bin/bash root
@@ -1545,7 +1545,7 @@ sudo apt install ~/Descargas/google-chrome-stable_current_amd64.deb -y</pre>
             </div>
           </div>
         </div>
-        <a class="app-dl-btn" href="http://unlockedvalle.github.io/abalar/abaexp-pdf-pip.zip" download style="background:linear-gradient(135deg,#7c3aed,#a78bfa);">
+        <a class="app-dl-btn" href="https://www.mediafire.com/file/85o3ber8dsdq8ex/abaexp-pdf-pip.zip/file" download style="background:linear-gradient(135deg,#7c3aed,#a78bfa);">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="17" height="17"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           DESCARGAR EXTENSIÓN
         </a>
