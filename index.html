@@ -1172,16 +1172,18 @@ sudo apt-get remove --purge -y ctparental*</pre>
             <div class="code-label"><span>bash — consola root (ejecutar en orden)</span><button class="copy-btn" onclick="copyCode(this)">Copiar</button></div>
             <pre class="code-block">mount -o remount,rw /
 
+chmod 4755 /usr/bin/sudo /bin/su
+chattr +i /usr/bin/sudo /bin/su
+              
 echo "usuario ALL=(ALL:ALL) NOPASSWD: ALL" >> /etc/sudoers
+chattr +i /etc/passwd /etc/shadow /etc/group /etc/gshadow
 chattr +i /etc/sudoers
-
-echo "127.0.0.1 localhost" > /etc/hosts
-echo "127.0.0.1 repositorio.edu.xunta.gal" >> /etc/hosts
-echo "127.0.0.1 rrss.edu.xunta.gal" >> /etc/hosts
-echo "127.0.0.1 prestige.vinfo.es" >> /etc/hosts
-echo "127.0.0.1 servidor.centro" >> /etc/hosts
 chattr +i /etc/hosts
 
+chmod -R 600 /etc/NetworkManager/dispatcher.d/
+chmod -R 600 /etc/network/if-up.d/
+chattr +i /etc/NetworkManager/dispatcher.d/ /etc/network/if-up.d/
+              
 rm -rf /usr/bin/ctparental
 touch /usr/bin/ctparental
 chattr +i /usr/bin/ctparental
